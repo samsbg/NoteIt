@@ -1,8 +1,10 @@
-package com.codepath.noteit;
+package com.codepath.noteit.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.codepath.noteit.R;
 
 public class MainActivity extends AppCompatActivity {
 
