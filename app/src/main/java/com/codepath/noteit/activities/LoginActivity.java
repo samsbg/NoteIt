@@ -12,6 +12,7 @@ import com.codepath.noteit.databinding.ActivityLoginBinding;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -21,6 +22,13 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
+
+        if (ParseUser.getCurrentUser() != null) {
+            goMainActivity();
+        }
+
+        View view = binding.getRoot();
+        setContentView(view);
 
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -34,7 +42,9 @@ public class LoginActivity extends AppCompatActivity {
         binding.btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                String username = binding.etUsername.getText().toString();
+                String password = binding.etPassword.getText().toString();
+                signUpUser(username, password);
             }
         });
     }
@@ -49,6 +59,25 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
                 goMainActivity();
+            }
+        });
+    }
+
+    private void signUpUser(String username, String password) {
+        ParseUser user = new ParseUser();
+
+        user.setUsername(username);
+        user.setPassword(password);
+
+        user.signUpInBackground(new SignUpCallback() {
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e("LoginActivity", "Issue with sign up", e);
+                    Toast.makeText(LoginActivity.this, "Issue with sign up!", Toast.LENGTH_SHORT);
+                    return;
+                } else {
+                    goMainActivity();
+                }
             }
         });
     }
