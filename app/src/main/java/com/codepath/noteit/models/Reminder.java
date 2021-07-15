@@ -1,4 +1,19 @@
 package com.codepath.noteit.models;
 
-public class Reminder {
+import com.parse.ParseClassName;
+import com.parse.ParseObject;
+
+import java.util.Date;
+
+@ParseClassName("Reminder")
+public class Reminder extends ParseObject {
+    private static final String KEY_DATE = "date";
+
+    public Date getDate() {
+        return getDate(KEY_DATE);
+    }
+
+    public void setDate(Date date) {
+        put(KEY_DATE, date);
+    }
 }
