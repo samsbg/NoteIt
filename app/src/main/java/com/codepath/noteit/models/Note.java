@@ -23,8 +23,4 @@ public class Note extends ParseObject {
         return getParseUser(KEY_CREATED_BY);
     }
 
-    public void setCreatedBy(ParseUser createdBy) {
-        put(KEY_CREATED_BY, createdBy);
-    }
-
 }

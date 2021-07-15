@@ -61,8 +61,4 @@ public class Goal extends ParseObject{
     public ParseUser getCreatedBy() {
         return getParseUser(KEY_CREATED_BY);
     }
-
-    public void setCreatedBy(ParseUser createdBy) {
-        put(KEY_CREATED_BY, createdBy);
-    }
 }
