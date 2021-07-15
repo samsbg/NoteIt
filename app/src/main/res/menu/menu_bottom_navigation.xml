@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/iStats"
+        android:icon="@drawable/stats_icon"
+        android:title="stats"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/iAdd"
+        android:icon="@drawable/add_icon"
+        android:title="add"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/iCalendar"
+        android:icon="@drawable/calendar_icon"
+        android:title="calendar"
+        app:showAsAction="always" />
+</menu>

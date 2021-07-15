@@ -1,5 +1,6 @@
 package com.codepath.noteit.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,9 +11,12 @@ import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.codepath.noteit.NoteEditorActivity;
 import com.codepath.noteit.R;
+import com.codepath.noteit.StatisticsActivity;
 import com.codepath.noteit.databinding.ActivityLoginBinding;
 import com.codepath.noteit.databinding.ActivityMainBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
@@ -36,11 +40,33 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 popup.show();
             }
         });
+
+        binding.bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.iAdd:
+                        PopupMenu popup = new PopupMenu(MainActivity.this, findViewById(R.id.iAdd));
+                        popup.setOnMenuItemClickListener(MainActivity.this);
+                        popup.inflate(R.menu.menu_add);
+                        popup.show();
+                        return true;
+                    case R.id.iCalendar:
+                        Intent i = new Intent(MainActivity.this, CalendarActivity.class);
+                        startActivity(i);
+                        return true;
+                    case R.id.iStats:
+                        Intent j = new Intent(MainActivity.this, StatisticsActivity.class);
+                        startActivity(j);
+                        return true;
+                    default: return true;
+                }
+            }
+        });
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        Toast.makeText(this, "Selected Item: " +item.getTitle(), Toast.LENGTH_SHORT).show();
         switch (item.getItemId()) {
             case R.id.iLogOut:
                 ParseUser.logOut();
@@ -48,6 +74,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 startActivity(i);
                 finish();
                 return true;
+            case R.id.iNote:
+                Intent j = new Intent(this, NoteEditorActivity.class);
+                startActivity(j);
+            case R.id.iCalendar:
+                Intent k = new Intent(this, CalendarActivity.class);
+                startActivity(k);
             default:
                 return false;
         }
