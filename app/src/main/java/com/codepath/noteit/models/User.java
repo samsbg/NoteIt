@@ -1,4 +1,44 @@
 package com.codepath.noteit.models;
 
-public class User {
+import com.parse.ParseClassName;
+import com.parse.ParseObject;
+
+// UserParse.getCurrentUsername can replace this class if it is only used for the user in the app
+// Check at the end if it is not needed
+
+@ParseClassName("User")
+public class User extends  ParseObject{
+
+    private static final String KEY_ID = "objectId";
+    private static final String KEY_USERNAME = "username";
+    private static final String KEY_COMPLETED = "completed";
+    private static final String KEY_REVIEWED = "reviewed";
+
+    public String getId() {
+        return getString(KEY_ID);
+    }
+
+    public String getUsername() {
+        return getString(KEY_USERNAME);
+    }
+
+    public void setUsername(String username) {
+        put(KEY_USERNAME, username);
+    }
+
+    public int getCompleted() {
+        return getInt(KEY_COMPLETED);
+    }
+
+    public void setCompleted(int completed) {
+        put(KEY_COMPLETED, completed);
+    }
+
+    public int getReviewed() {
+        return getInt(KEY_REVIEWED);
+    }
+
+    public void setReviewed(int reviewed) {
+        put(KEY_REVIEWED, reviewed);
+    }
 }
