@@ -7,23 +7,16 @@ import com.parse.ParseUser;
 import java.util.Date;
 
 @ParseClassName("Goal")
-public class Goal extends  ParseObject{
+public class Goal extends ParseObject{
 
-    private static final String KEY_NAME = "objectId";
+    private static final String KEY_OBJECT_ID = "objectId";
+    private static final String KEY_NAME = "name";
     private static final String KEY_REVIEWED = "reviewed";
     private static final String KEY_TOTAL_REVIEWS = "totalReviews";
     private static final String KEY_DUE_DATE = "dueDate";
     private static final String KEY_NOTE = "note";
     private static final String KEY_TAG = "tag";
     private static final String KEY_CREATED_BY = "createdBy";
-
-    public String getName() {
-        return getString(KEY_NAME);
-    }
-
-    public void setName(String name) {
-        put(KEY_NAME, name);
-    }
 
     public int getTotalReviews() {
         return getInt(KEY_TOTAL_REVIEWS);
