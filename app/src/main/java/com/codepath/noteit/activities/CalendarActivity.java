@@ -12,7 +12,9 @@ import com.codepath.noteit.databinding.ActivityCalendarBinding;
 import com.codepath.noteit.databinding.CalendarDayLayoutBinding;
 import com.kizitonwose.calendarview.CalendarView;
 import com.kizitonwose.calendarview.model.CalendarDay;
+import com.kizitonwose.calendarview.model.CalendarMonth;
 import com.kizitonwose.calendarview.ui.DayBinder;
+import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder;
 import com.kizitonwose.calendarview.ui.ViewContainer;
 
 import java.time.DayOfWeek;
@@ -37,15 +39,23 @@ public class CalendarActivity extends AppCompatActivity {
         YearMonth currentMonth = now();
         YearMonth firstMonth = currentMonth.minusMonths(10);
         YearMonth lastMonth = currentMonth.plusMonths(10);
-        DayOfWeek firstDayOfWeek = WeekFields.of(Locale.getDefault()).getFirstDayOfWeek();
+        DayOfWeek firstDayOfWeek = DayOfWeek.MONDAY;
 
         class DayViewContainer extends ViewContainer {
-
             final TextView calendarDay;
 
             public DayViewContainer(@NonNull View view) {
                 super(view);
                 calendarDay = view.findViewById(R.id.tvCalendarDay);
+            }
+        }
+
+        class MonthViewContainer extends ViewContainer {
+            final TextView calendarMonth;
+
+            public MonthViewContainer(@NonNull View view) {
+                super(view);
+                calendarMonth = view.findViewById(R.id.tvCalendarMonth);
             }
         }
 
@@ -61,6 +71,18 @@ public class CalendarActivity extends AppCompatActivity {
             @Override
             public void bind(@NonNull DayViewContainer container, @NonNull CalendarDay day) {
                 container.calendarDay.setText(String.valueOf(day.getDay()));
+            }
+        });
+
+        calendarView.setMonthHeaderBinder(new MonthHeaderFooterBinder<MonthViewContainer>() {
+            @Override
+            public MonthViewContainer create(View view) {
+                return new MonthViewContainer(view);
+            }
+
+            @Override
+            public void bind(@NonNull MonthViewContainer container, CalendarMonth calendarMonth) {
+                container.calendarMonth.setText(String.valueOf(calendarMonth.getMonth()));
             }
         });
 
