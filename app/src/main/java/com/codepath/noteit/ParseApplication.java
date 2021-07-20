@@ -2,7 +2,9 @@ package com.codepath.noteit;
 
 import android.app.Application;
 
+import com.codepath.noteit.models.User;
 import com.parse.Parse;
+import com.parse.ParseUser;
 
 public class ParseApplication extends Application {
 
@@ -17,5 +19,7 @@ public class ParseApplication extends Application {
                 .server("https://parseapi.back4app.com")
                 .build()
         );
+
+        ParseUser.registerSubclass(User.class);
     }
 }

@@ -2,12 +2,13 @@ package com.codepath.noteit.models;
 
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 // UserParse.getCurrentUsername can replace this class if it is only used for the user in the app
 // Check at the end if it is not needed
 
-@ParseClassName("User")
-public class User extends  ParseObject{
+@ParseClassName("_User")
+public class User extends ParseUser{
 
     private static final String KEY_ID = "objectId";
     private static final String KEY_USERNAME = "username";
