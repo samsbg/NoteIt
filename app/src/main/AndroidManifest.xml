@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NoteIt">
         <activity android:name=".activities.CalendarActivity"></activity>
-        <activity android:name=".StatisticsActivity" />
+        <activity android:name=".activities.StatisticsActivity" />
         <activity android:name=".activities.GoalEditorActivity" />
         <activity android:name=".NoteEditorActivity" />
         <activity android:name=".activities.LoginActivity">
