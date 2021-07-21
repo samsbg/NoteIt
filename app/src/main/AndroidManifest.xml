@@ -16,7 +16,7 @@
         <activity android:name=".activities.CalendarActivity"></activity>
         <activity android:name=".activities.StatisticsActivity" />
         <activity android:name=".activities.GoalEditorActivity" />
-        <activity android:name=".NoteEditorActivity" />
+        <activity android:name=".activities.NoteEditorActivity" />
         <activity android:name=".activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

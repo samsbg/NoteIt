@@ -1,4 +1,4 @@
-package com.codepath.noteit;
+package com.codepath.noteit.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,6 +9,6 @@ public class NoteEditorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_note_editor);
+        //setContentView(R.layout.activity_note_editor);
     }
 }
