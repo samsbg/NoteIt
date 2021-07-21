@@ -2,6 +2,10 @@ package com.codepath.noteit;
 
 import android.app.Application;
 
+import com.codepath.noteit.models.Goal;
+import com.codepath.noteit.models.Note;
+import com.codepath.noteit.models.Reminder;
+import com.codepath.noteit.models.Tag;
 import com.codepath.noteit.models.User;
 import com.parse.Parse;
 import com.parse.ParseUser;
@@ -21,5 +25,9 @@ public class ParseApplication extends Application {
         );
 
         ParseUser.registerSubclass(User.class);
+        ParseUser.registerSubclass(Goal.class);
+        ParseUser.registerSubclass(Note.class);
+        ParseUser.registerSubclass(Reminder.class);
+        ParseUser.registerSubclass(Tag.class);
     }
 }

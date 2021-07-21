@@ -4,6 +4,8 @@ import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import org.json.JSONArray;
+
 import java.util.Date;
 
 @ParseClassName("Goal")
@@ -16,6 +18,7 @@ public class Goal extends ParseObject{
     private static final String KEY_TAG = "tag";
     private static final String KEY_CREATED_BY = "createdBy";
     private static final String KEY_COMPLETED_BY = "completedBy";
+    private static final String KEY_REMINDERS = "reminders";
 
     public int getTotalReviews() {
         return getInt(KEY_TOTAL_REVIEWS);
@@ -67,5 +70,9 @@ public class Goal extends ParseObject{
 
     public void setCompletedBy(Date date) {
         put(KEY_COMPLETED_BY, date);
+    }
+
+    public JSONArray getReminders() {
+        return getJSONArray(KEY_REMINDERS);
     }
 }
