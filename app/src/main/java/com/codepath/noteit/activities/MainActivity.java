@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.codepath.noteit.R;
 import com.codepath.noteit.databinding.ActivityMainBinding;
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                //.requestIdToken(getString(R.string.your_web_app_client_id))
+                .requestIdToken(getString(R.string.your_web_app_client_id))
                 .build();
         googleClient = GoogleSignIn.getClient(MainActivity.this, gso);
 
@@ -100,11 +101,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }
@@ -114,14 +111,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
-            // Signed in successfully, show authenticated UI.
             Log.d("OAuth login", "User signed in to google");
-            //updateUI(account);
+            Toast.makeText(getApplicationContext(), "Successful login", Toast.LENGTH_LONG).show();
+
         } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w("OAuth login", "signInResult:failed code=" + e.getStatusCode());
-            //updateUI(null);
+            Toast.makeText(getApplicationContext(), "Error while signing in, code="+ e.getStatusCode(), Toast.LENGTH_LONG).show();
         }
     }
 }
