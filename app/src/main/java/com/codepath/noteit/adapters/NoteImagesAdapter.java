@@ -1,6 +1,8 @@
 package com.codepath.noteit.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -10,15 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.codepath.noteit.databinding.ItemPicturesBinding;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import java.util.List;
 
 public class NoteImagesAdapter extends RecyclerView.Adapter<NoteImagesAdapter.ViewHolder>{
 
     Context context;
-    JSONArray images;
+    List<Bitmap> images;
 
-    public NoteImagesAdapter(Context context, JSONArray images) {
+    public NoteImagesAdapter(Context context, List<Bitmap> images) {
         super();
         this.context = context;
         this.images = images;
@@ -32,18 +33,13 @@ public class NoteImagesAdapter extends RecyclerView.Adapter<NoteImagesAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull NoteImagesAdapter.ViewHolder holder, int position) {
-        Object image = null;
-        try {
-            image = images.get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        Bitmap image = images.get(position);
         holder.bind(image);
     }
 
     @Override
     public int getItemCount() {
-        return images.length();
+        return images.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -53,10 +49,9 @@ public class NoteImagesAdapter extends RecyclerView.Adapter<NoteImagesAdapter.Vi
         public ViewHolder(ItemPicturesBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
-
         }
 
-        public void bind(final Object photoFile) {
+        public void bind(final Bitmap photoFile) {
             Glide.with(context).load(photoFile).into(binding.ivImage);
         }
 
