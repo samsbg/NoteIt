@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             public void onClick(View v) {
                 PopupMenu popup = new PopupMenu(MainActivity.this, v);
                 popup.setOnMenuItemClickListener(MainActivity.this);
-                popup.inflate(R.menu.menu_user_icon);
+                popup.inflate(R.menu.menu_user_icon_main);
                 popup.show();
             }
         });
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                     case R.id.iAdd:
                         PopupMenu popup = new PopupMenu(MainActivity.this, findViewById(R.id.iAdd));
                         popup.setOnMenuItemClickListener(MainActivity.this);
-                        popup.inflate(R.menu.menu_add);
+                        popup.inflate(R.menu.menu_add_main);
                         popup.show();
                         return true;
                     case R.id.iCalendar:
