@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.noteit.databinding.ActivityLoginBinding;
+import com.codepath.noteit.models.User;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -64,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void signUpUser(String username, String password) {
-        ParseUser user = new ParseUser();
+        User user = new User();
 
         user.setUsername(username);
         user.setPassword(password);
