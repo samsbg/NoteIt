@@ -91,6 +91,8 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                     return;
                 }
                 finish();
+                Intent i = new Intent(NoteEditorActivity.this, MainActivity.class);
+                startActivity(i);
             }
         });
     }
