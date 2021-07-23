@@ -2,6 +2,8 @@ package com.codepath.noteit.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +14,11 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.codepath.noteit.R;
+import com.codepath.noteit.adapters.MainGoalAdapter;
+import com.codepath.noteit.adapters.MainNoteAdapter;
 import com.codepath.noteit.databinding.ActivityMainBinding;
+import com.codepath.noteit.models.Goal;
+import com.codepath.noteit.models.Note;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -20,11 +26,24 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.parse.FindCallback;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Collections.reverse;
 
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     ActivityMainBinding binding;
+
+    MainNoteAdapter noteAdapter;
+    MainGoalAdapter goalAdapter;
+    List<Note> notes;
+    List<Goal> goals;
+
     GoogleSignInClient googleClient;
 
     final int RC_SIGN_IN = 23;
@@ -42,6 +61,18 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 .requestIdToken(getString(R.string.your_web_app_client_id))
                 .build();
         googleClient = GoogleSignIn.getClient(MainActivity.this, gso);
+
+        notes = new ArrayList<>();
+        noteAdapter = new MainNoteAdapter(this, notes);
+        binding.rvNotes.setLayoutManager(new GridLayoutManager(this, 2));
+        binding.rvNotes.setAdapter(noteAdapter);
+        queryNotes();
+
+        goals = new ArrayList<>();
+        //goalAdapter = new MainGoalAdapter(this, goals);
+        binding.rvGoals.setLayoutManager(new LinearLayoutManager(this));
+        //binding.rvGoals.setAdapter(goalAdapter);
+        queryGoals();
 
         binding.ibUserIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +106,28 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 }
             }
         });
+    }
+
+    private void queryNotes() {
+        ParseQuery<Note> query = ParseQuery.getQuery(Note.class);
+        query.include(Note.KEY_USER);
+        query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<Note>() {
+            @Override
+            public void done(List<Note> notesList, com.parse.ParseException e) {
+                if (e != null) {
+                    Log.e("MainActivity", "Issue with getting notes", e);
+                    return;
+                }
+                reverse(notesList);
+                notes.addAll(notesList);
+                Log.d("MainActivity", "Size of list " + notes.size());
+                noteAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void queryGoals() {
     }
 
     @Override
