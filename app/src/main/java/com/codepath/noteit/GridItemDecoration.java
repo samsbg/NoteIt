@@ -30,14 +30,18 @@ public class GridItemDecoration extends RecyclerView.ItemDecoration
             }
             else if (position == parent.getAdapter().getItemCount() - 1 && position % 3 == 1) {
                 spanCount = 2;
+                column = position % spanCount;
+                outRect.left = mHorizontalSpacing * (spanCount - column) / spanCount;
+                outRect.right = mHorizontalSpacing * (column + 1) / spanCount;
             }
             else {
                 spanCount = layoutManager.getSpanCount();
+                column = position % spanCount;
+                outRect.left = mHorizontalSpacing * (spanCount - column) / spanCount;
+                outRect.right = mHorizontalSpacing * (column + 1) / spanCount;
             }
 
-            column = position % spanCount;
-            outRect.left = mHorizontalSpacing * (spanCount - column) / spanCount;
-            outRect.right = mHorizontalSpacing * (column + 1) / spanCount;
+
 
             if (position < spanCount)
             {
