@@ -3,12 +3,16 @@ package com.codepath.noteit.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.codepath.noteit.GridItemDecoration;
+import com.codepath.noteit.R;
 import com.codepath.noteit.adapters.NoteImagesAdapter;
 import com.codepath.noteit.databinding.ActivityNoteEditorBinding;
 import com.codepath.noteit.models.Note;
@@ -18,7 +22,7 @@ import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 
-public class NoteEditorActivity extends AppCompatActivity {
+public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     ActivityNoteEditorBinding binding;
     JSONArray images;
@@ -47,6 +51,16 @@ public class NoteEditorActivity extends AppCompatActivity {
                 saveNote(binding.tvTitle.getText().toString(), binding.tvContent.getText().toString(), images, ParseUser.getCurrentUser());
             }
         });
+
+        binding.ibAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popup = new PopupMenu(NoteEditorActivity.this, v);
+                popup.setOnMenuItemClickListener(NoteEditorActivity.this);
+                popup.inflate(R.menu.menu_add_note);
+                popup.show();
+            }
+        });
     }
 
     private void saveNote(String title, String content, JSONArray images, ParseUser currentUser) {
@@ -66,5 +80,18 @@ public class NoteEditorActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.iChooseImage:
+                //
+                return true;
+            case R.id.iTakePhoto:
+                //
+            default:
+                return false;
+        }
     }
 }
