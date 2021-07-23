@@ -34,6 +34,7 @@ import java.util.List;
 public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
+    private static final int PICK_IMAGE = 103;
 
     ActivityNoteEditorBinding binding;
     NoteImagesAdapter adapter;
@@ -101,7 +102,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.iChooseImage:
-                //
+                openGallery();
                 return true;
             case R.id.iTakePhoto:
                 launchCamera();
@@ -109,6 +110,13 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
             default:
                 return false;
         }
+    }
+
+    private void openGallery() {
+        Intent gallery =
+                new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        startActivityForResult(gallery, PICK_IMAGE);
     }
 
     private void launchCamera() {
@@ -134,6 +142,16 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                 binding.rvImages.smoothScrollToPosition(0);
             } else {
                 Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (requestCode == PICK_IMAGE) {
+            if (resultCode == RESULT_OK) {
+                Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+                images.add(takenImage);
+                adapter.notifyDataSetChanged();
+                binding.rvImages.smoothScrollToPosition(0);
+            } else {
+                Toast.makeText(this, "Picture wasn't chosen", Toast.LENGTH_SHORT).show();
             }
         }
     }
