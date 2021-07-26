@@ -17,10 +17,6 @@ public class Note extends ParseObject {
     private static final String KEY_IMAGES = "images";
     private static final String KEY_CREATED_BY = "createdBy";
 
-    public ParseUser getUser() {
-        return getParseUser(KEY_USER);
-    }
-
     public String getTitle() {
         return getString(KEY_TITLE);
     }

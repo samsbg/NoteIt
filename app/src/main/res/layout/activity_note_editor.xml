@@ -86,7 +86,7 @@
         android:clickable="true" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/ibAddTag"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_alignParentTop="true"
@@ -97,11 +97,11 @@
 
     <EditText
         android:id="@+id/etTag"
-        android:layout_width="130dp"
+        android:layout_width="110dp"
         android:layout_height="40dp"
         android:layout_alignParentTop="true"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="40dp"
         android:layout_toStartOf="@+id/ibDelete"
         android:hint="Add Tag"
         android:textSize="16sp" />

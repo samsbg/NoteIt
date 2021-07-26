@@ -13,6 +13,9 @@ import java.util.List;
 
 @ParseClassName("Tag")
 public class Tag extends ParseObject {
+
+    public static final String KEY_USER = "user";
+
     private static final String KEY_CREATED_BY = "createdBy";
     private static final String KEY_NOTES = "notes";
 
@@ -22,5 +25,9 @@ public class Tag extends ParseObject {
 
     public JSONArray getNotes() {
         return getJSONArray(KEY_NOTES);
+    }
+
+    public void setNotes(JSONArray notes) {
+        put(KEY_NOTES, notes);
     }
 }
