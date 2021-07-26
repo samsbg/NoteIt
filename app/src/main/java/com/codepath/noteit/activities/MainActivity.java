@@ -142,9 +142,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             case R.id.iNote:
                 Intent j = new Intent(this, NoteEditorActivity.class);
                 startActivity(j);
+            case R.id.iGoal:
+                Intent k = new Intent(this, GoalEditorActivity.class);
+                startActivity(k);
             case R.id.iConnectGoogle:
-                Intent k = googleClient.getSignInIntent();
-                startActivityForResult(k, RC_SIGN_IN);
+                Intent l = googleClient.getSignInIntent();
+                startActivityForResult(l, RC_SIGN_IN);
                 return true;
             default:
                 return false;
