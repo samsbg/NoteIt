@@ -22,27 +22,20 @@ import com.codepath.noteit.adapters.NoteImagesAdapter;
 import com.codepath.noteit.databinding.ActivityNoteEditorBinding;
 import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Tag;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Collections.reverse;
 
 public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
@@ -110,8 +103,21 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
     private void saveNote() {
         note.setTitle(binding.tvTitle.getText().toString());
         note.setContent(binding.tvContent.getText().toString());
-        note.setImages(new JSONArray(images));
         note.setCreatedBy(ParseUser.getCurrentUser());
+
+        JSONArray jArray = new JSONArray();
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        for (int i = 0; i < images.size(); i++) {
+            images.get(i).compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            byte[] scaledData = bos.toByteArray();
+            jArray.put(new ParseFile("image_to_be_saved.jpg", scaledData));
+        }
+
+        note.setImages(jArray);
+
+        Log.d("NoteEditor", jArray.toString());
 
         note.saveInBackground(new SaveCallback() {
             @Override
@@ -133,9 +139,10 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
             Toast.makeText(NoteEditorActivity.this, "Needs tag name", Toast.LENGTH_SHORT).show();
             return;
         }
+
         tag = new Tag();
+
         ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
-        query.include(Tag.KEY_USER);
         query.whereEqualTo("name", tagString);
         query.findInBackground(new FindCallback<Tag>() {
             @Override
@@ -146,11 +153,14 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                 }
                 if (!tagsList.isEmpty()) {
                     tag = tagsList.get(0);
+                    return;
                 }
+                tag.setName(tagString);
+                tag.setCreatedBy(ParseUser.getCurrentUser());
             }
         });
 
-        //Issue to solve
+        Log.d("NoteEditor", "Name: " + tag.getName() + " Created by " + ParseUser.getCurrentUser().getUsername());
 
         JSONArray notes = tag.getNotes();
 
@@ -158,11 +168,27 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
             notes = new JSONArray();
         }
 
-        saveNote();
         notes.put(note);
         tag.setNotes(notes);
 
         Log.d("NoteEditor", notes.toString());
+
+        saveTag(tag);
+    }
+
+    private void saveTag(Tag tag) {
+        tag.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e != null) {
+                    Log.e("NoteEditor", "Issue while saving tag", e);
+                    return;
+                }
+                Log.d("NoteEditor", "Tag was saved");
+                binding.etTag.setText("");
+                saveNote();
+            }
+        });
     }
 
     private void returnMain() {

@@ -1,7 +1,6 @@
 package com.codepath.noteit.models;
 
 import com.parse.ParseClassName;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
@@ -9,8 +8,6 @@ import org.json.JSONArray;
 
 @ParseClassName("Note")
 public class Note extends ParseObject {
-
-    public static final String KEY_USER = "user";
 
     private static final String KEY_TITLE = "title";
     private static final String KEY_CONTENT = "content";
