@@ -11,6 +11,7 @@ import java.util.Date;
 @ParseClassName("Goal")
 public class Goal extends ParseObject{
 
+    private static final String KEY_NAME = "name";
     private static final String KEY_REVIEWED = "reviewed";
     private static final String KEY_TOTAL_REVIEWS = "totalReviews";
     private static final String KEY_DUE_DATE = "dueDate";
@@ -19,6 +20,14 @@ public class Goal extends ParseObject{
     private static final String KEY_CREATED_BY = "createdBy";
     private static final String KEY_COMPLETED_BY = "completedBy";
     private static final String KEY_REMINDERS = "reminders";
+
+    public String getName() {
+        return getString(KEY_NAME);
+    }
+
+    public void setName(String name) {
+        put(KEY_NAME, name);
+    }
 
     public int getTotalReviews() {
         return getInt(KEY_TOTAL_REVIEWS);
@@ -74,5 +83,9 @@ public class Goal extends ParseObject{
 
     public JSONArray getReminders() {
         return getJSONArray(KEY_REMINDERS);
+    }
+
+    public void setReminders(JSONArray reminders) {
+        put(KEY_REMINDERS, reminders);
     }
 }

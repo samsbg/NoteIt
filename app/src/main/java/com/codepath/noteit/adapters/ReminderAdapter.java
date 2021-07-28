@@ -12,7 +12,6 @@ import android.widget.DatePicker;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.codepath.noteit.activities.GoalEditorActivity;
 import com.codepath.noteit.databinding.ItemReminderBinding;
 import com.codepath.noteit.models.Reminder;
 
@@ -64,7 +63,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
         }
 
         public void bind(final Reminder rem) {
-            String dateStr = rem.getDate().getDate() + "/" + ( (int) rem.getDate().getMonth()+1) + "/" + rem.getDate().getYear();
+            String dateStr = ( (int) rem.getDate().getMonth()+1) + "/" + rem.getDate().getDate()  + "/" + (rem.getDate().getYear()+1900);
             binding.tvDate.setText(dateStr);
 
             binding.tvEdit.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +77,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
                     mDateSetListener = new DatePickerDialog.OnDateSetListener() {
                         @Override
                         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                            Date newDate = new Date(year, month, dayOfMonth);
+                            Date newDate = new Date(year-1900, month, dayOfMonth);
                             clickListener.onItemClicked(getAdapterPosition(), newDate);
                             notifyDataSetChanged();
                         }
@@ -88,7 +87,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
                             v.getContext(),
                             android.R.style.Theme_Holo_Light_Dialog_MinWidth,
                             mDateSetListener,
-                            year, month, day);
+                            rem.getDate().getYear()+1900, rem.getDate().getMonth(), rem.getDate().getDate());
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     dialog.show();
                 }

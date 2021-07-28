@@ -19,7 +19,7 @@ public class Reminder extends ParseObject {
         put(KEY_DATE, date);
     }
 
-    public ParseUser getCreatedBy() {
-        return getParseUser(KEY_CREATED_BY);
+    public void setCreatedBy(ParseUser user) {
+        put(KEY_CREATED_BY, user);
     }
 }

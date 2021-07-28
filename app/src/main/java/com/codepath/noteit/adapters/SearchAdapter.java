@@ -9,10 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codepath.noteit.databinding.ItemSearchBinding;
+import com.codepath.noteit.models.Note;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder>{
 
@@ -20,19 +19,15 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         void onItemClicked(int position);
     }
 
-    private Context mContext;
+    Context context;
     OnClickListener clickListener;
+    List<Note> items;
 
-    private List<String> items;
-    private List<String> filter;
-
-    public SearchAdapter(Context context, List<String> filter, OnClickListener clickListener) {
-        this.mContext = context;
-        this.filter = filter;
+    public SearchAdapter(Context context, List<Note> items, OnClickListener clickListener) {
+        super();
+        this.context = context;
+        this.items = items;
         this.clickListener = clickListener;
-
-        this.items = new ArrayList<>();
-        this.items.addAll(filter);
     }
 
     @NonNull
@@ -43,28 +38,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull SearchAdapter.ViewHolder holder, int position) {
-        String str = filter.get(position);
-        holder.bind(str);
+        Note note = items.get(position);
+        holder.bind(note);
     }
 
     @Override
     public int getItemCount() {
-        return filter.size();
-    }
-
-    public void filter(String charText) {
-        charText = charText.toLowerCase(Locale.getDefault());
-        filter.clear();
-        if (charText.length() == 0) {
-            filter.addAll(items);
-        } else {
-            for (String str : items) {
-                if (str.toLowerCase(Locale.getDefault()).contains(charText)) {
-                    filter.add(str);
-                }
-            }
-        }
-        notifyDataSetChanged();
+        return items.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -76,8 +56,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             this.binding = binding;
         }
 
-        public void bind(final String str) {
-            binding.tvItem.setText(str);
+        public void bind(final Note note) {
+            binding.tvItem.setText(note.getTitle());
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
