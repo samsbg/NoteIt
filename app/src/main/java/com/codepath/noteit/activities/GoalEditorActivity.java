@@ -143,9 +143,15 @@ public class GoalEditorActivity extends AppCompatActivity {
             }
         });
 
-        binding.etGenerateRem.setOnClickListener(new View.OnClickListener() {
+        binding.etNumber.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
                 generateReminders();
             }
         });
@@ -254,10 +260,6 @@ public class GoalEditorActivity extends AppCompatActivity {
         String name = binding.tvName.getText().toString();
         String amount = binding.etNumber.getText().toString();
 
-        if (name.equals("")) {
-            Toast.makeText(GoalEditorActivity.this, "Name must be filled", Toast.LENGTH_SHORT).show();
-            return;
-        }
         if (amount.equals("")) {
             Toast.makeText(GoalEditorActivity.this, "Number of reminders must be filled", Toast.LENGTH_SHORT).show();
             return;
