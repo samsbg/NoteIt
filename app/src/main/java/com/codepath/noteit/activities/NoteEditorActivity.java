@@ -47,7 +47,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
     List<Bitmap> images;
     File photoFile;
     Note note;
-    Tag tag;
+    Tag tagSave;
 
     String photoFileName = "photo.jpg";
 
@@ -123,27 +123,33 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
             @Override
             public void done(ParseException e) {
                 if (e != null) {
-                    Log.e("MainActivity", "Error while saving", e);
+                    Log.e("MainActivity", "Error while saving note", e);
                     Toast.makeText(NoteEditorActivity.this, "Error while saving", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Toast.makeText(NoteEditorActivity.this, "Note saved!", Toast.LENGTH_SHORT).show();
                 Log.d("NoteEditor", "Note saved");
+                finish();
+                returnMain();
             }
         });
     }
 
     private void addTag() {
         String tagString = binding.etTag.getText().toString();
-        if (tagString == null) {
+
+        if (tagString.equals("")) {
             Toast.makeText(NoteEditorActivity.this, "Needs tag name", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        tag = new Tag();
+        tagSave = new Tag();
+        tagSave.setName(tagString);
+        tagSave.setCreatedBy(ParseUser.getCurrentUser());
 
         ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
         query.whereEqualTo("name", tagString);
+        query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<Tag>() {
             @Override
             public void done(List<Tag> tagsList, com.parse.ParseException e) {
@@ -151,42 +157,36 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                     Log.e("NoteEditorActivity", "Issue with getting notes", e);
                     return;
                 }
+
                 if (!tagsList.isEmpty()) {
-                    tag = tagsList.get(0);
-                    return;
+                    tagSave = tagsList.get(0);
+                    Log.d("NoteEditor", tagSave.toString());
                 }
-                tag.setName(tagString);
-                tag.setCreatedBy(ParseUser.getCurrentUser());
-            }
-        });
 
-        Log.d("NoteEditor", "Name: " + tag.getName() + " Created by " + ParseUser.getCurrentUser().getUsername());
+                Log.d("NoteEditor", "Name: " + tagSave.getName() + " Created by " + tagSave.getCreatedBy().getUsername());
+                JSONArray notes = tagSave.getNotes();
 
-        JSONArray notes = tag.getNotes();
-
-        if(notes == null) {
-            notes = new JSONArray();
-        }
-
-        notes.put(note);
-        tag.setNotes(notes);
-
-        Log.d("NoteEditor", notes.toString());
-
-        saveTag(tag);
-    }
-
-    private void saveTag(Tag tag) {
-        tag.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if(e != null) {
-                    Log.e("NoteEditor", "Issue while saving tag", e);
-                    return;
+                if(notes == null) {
+                    notes = new JSONArray();
                 }
-                Log.d("NoteEditor", "Tag was saved");
-                binding.etTag.setText("");
-                saveNote();
+
+                notes.put(note);
+                tagSave.setNotes(notes);
+
+                Log.d("NoteEditor", notes.toString());
+
+                tagSave.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if(e != null) {
+                            Log.e("NoteEditor", "Issue while saving tag", e);
+                            return;
+                        }
+                        Log.d("NoteEditor", "Tag was saved");
+                        binding.etTag.setText("");
+                        saveNote();
+                    }
+                });
             }
         });
     }
