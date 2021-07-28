@@ -4,22 +4,23 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codepath.noteit.activities.GoalEditorActivity;
-import com.codepath.noteit.databinding.ItemNoteBinding;
 import com.codepath.noteit.databinding.ItemReminderBinding;
-import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Reminder;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class ReminderAdapter {
+public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHolder>{
 
     public interface OnClickListener {
         void onItemClicked(int position, Date date);
@@ -33,6 +34,24 @@ public class ReminderAdapter {
     public ReminderAdapter(Context context, List<Reminder> reminders, OnClickListener clickListener) {
         this.context = context;
         this.reminders = reminders;
+        this.clickListener = clickListener;
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new ReminderAdapter.ViewHolder(ItemReminderBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ReminderAdapter.ViewHolder holder, int position) {
+        Reminder rem = reminders.get(position);
+        holder.bind(rem);
+    }
+
+    @Override
+    public int getItemCount() {
+        return reminders.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -44,8 +63,9 @@ public class ReminderAdapter {
             this.binding = binding;
         }
 
-        public void bind(final Date date) {
-            binding.tvDate.setText(date.getDay() + "/" + date.getMonth() + "/" + date.getYear());
+        public void bind(final Reminder rem) {
+            String dateStr = rem.getDate().getDate() + "/" + ( (int) rem.getDate().getMonth()+1) + "/" + rem.getDate().getYear();
+            binding.tvDate.setText(dateStr);
 
             binding.tvEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -55,8 +75,17 @@ public class ReminderAdapter {
                     int month = cal.get(Calendar.MONTH);
                     int day = cal.get(Calendar.DAY_OF_MONTH);
 
+                    mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            Date newDate = new Date(year, month, dayOfMonth);
+                            clickListener.onItemClicked(getAdapterPosition(), newDate);
+                            notifyDataSetChanged();
+                        }
+                    };
+
                     DatePickerDialog dialog = new DatePickerDialog(
-                            context.getApplicationContext(),
+                            v.getContext(),
                             android.R.style.Theme_Holo_Light_Dialog_MinWidth,
                             mDateSetListener,
                             year, month, day);
@@ -64,17 +93,6 @@ public class ReminderAdapter {
                     dialog.show();
                 }
             });
-
-            mDateSetListener = new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    month = month + 1;
-                    binding.tvDate.setText(dayOfMonth + "/" + month + "/" + year);
-                    Date newDate = new Date(year, month, dayOfMonth);
-                    clickListener.onItemClicked(getAdapterPosition(), newDate);
-                }
-            };
         }
-
     }
 }
