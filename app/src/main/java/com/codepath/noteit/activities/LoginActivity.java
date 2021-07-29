@@ -82,24 +82,26 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
                 goMainActivity();
+
+                Substring substring = new Substring();
+                JSONObject obj = new JSONObject();
+
+                substring.setCreatedBy(ParseUser.getCurrentUser());
+                substring.setMap(obj);
+
+                substring.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e != null) {
+                            Log.e("LoginActivity", "Issue with setting up substring", e);
+                            return;
+                        }
+                    }
+                });
             }
         });
 
-        Substring substring = new Substring();
-        JSONObject obj = new JSONObject();
 
-        substring.setCreatedBy(user);
-        substring.setMap(obj);
-
-        substring.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.e("LoginActivity", "Issue with setting up substring", e);
-                    return;
-                }
-            }
-        });
     }
 
     private void goMainActivity() {
