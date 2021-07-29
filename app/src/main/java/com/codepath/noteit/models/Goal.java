@@ -73,6 +73,10 @@ public class Goal extends ParseObject{
         return getParseUser(KEY_CREATED_BY);
     }
 
+    public void setCreatedBy(ParseUser user) {
+        put(KEY_CREATED_BY, user);
+    }
+
     public Date getCompletedBy() {
         return getDate(KEY_COMPLETED_BY);
     }
