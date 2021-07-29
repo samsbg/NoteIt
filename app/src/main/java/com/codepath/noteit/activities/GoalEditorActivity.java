@@ -67,7 +67,6 @@ public class GoalEditorActivity extends AppCompatActivity {
     List<Integer> daysNum;
     List<Note> notes;
     List<Tag> tags;
-    Map<String, List<Note>> mapNotes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +98,6 @@ public class GoalEditorActivity extends AppCompatActivity {
         reminders = new ArrayList<>();
         notes = new ArrayList<>();
         tags = new ArrayList<>();
-
-        mapNotes = new HashMap<>();
 
         reminderAdapter = new ReminderAdapter(this, reminders, onClickListenerReminder);
         binding.rvReminders.setLayoutManager(new LinearLayoutManager(this));
@@ -174,8 +171,8 @@ public class GoalEditorActivity extends AppCompatActivity {
                 binding.rvSearch.setVisibility(View.VISIBLE);
                 notes.clear();
                 String text = s.toString().toLowerCase();
-                if(!text.equals("")) {
-                    notes.addAll(mapNotes.get(text));
+                if(!text.equals("") && MainActivity.substrings.get(text) != null) {
+                    notes.addAll(MainActivity.substrings.get(text));
                 }
                 searchAdapter.notifyDataSetChanged();
             }
@@ -307,29 +304,6 @@ public class GoalEditorActivity extends AppCompatActivity {
                     return;
                 }
                 notes.addAll(notesList);
-
-                for (Note note : notesList) {
-                    addNoteToMap(note);
-                }
-
-                //From map to JSONobject
-                JSONObject objMap = new JSONObject();
-                JSONArray arr2;
-
-                for (String key : mapNotes.keySet()) {
-                    arr2 = new JSONArray();
-
-                    for (Note noteIt : mapNotes.get(key)) {
-                        arr2.put(noteIt);
-                    }
-
-                    try {
-                        objMap.put(key, arr2);
-                    } catch (JSONException jsonException) {
-                        jsonException.printStackTrace();
-                    }
-                }
-
             }
         });
 
@@ -349,25 +323,4 @@ public class GoalEditorActivity extends AppCompatActivity {
             }
         });
     }
-
-    public void addNoteToMap(Note n) {
-        int stringLength = n.getTitle().length();
-        String substring;
-
-        for (int i = 0; i < stringLength; i++) {
-            for (int j = i + 1; j <= stringLength; j++) {
-                substring = n.getTitle().substring(i,j).toLowerCase();
-                if(mapNotes.containsKey(substring)) {
-                    if (!mapNotes.get(substring).contains(n)) {
-                        mapNotes.get(substring).add(n);
-                    }
-                } else {
-                    mapNotes.put(substring, new ArrayList<>());
-                    mapNotes.get(substring).add(n);
-                }
-            }
-
-        }
-    }
-
 }

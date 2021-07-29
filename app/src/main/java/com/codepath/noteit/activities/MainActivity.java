@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,7 +22,6 @@ import com.codepath.noteit.adapters.SearchAdapter;
 import com.codepath.noteit.databinding.ActivityMainBinding;
 import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
-import com.codepath.noteit.models.Substring;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -31,20 +29,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.gson.Gson;
 import com.parse.FindCallback;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.reverse;
 
@@ -59,11 +50,46 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     List<Note> notes;
     List<Note> notesSearch;
     List<Goal> goals;
-    Map<String, List<Note>> map;
 
     GoogleSignInClient googleClient;
 
     final int RC_SIGN_IN = 23;
+
+    public static HashMap<String, List<Note>> substrings;
+    static {
+        substrings = new HashMap<>();
+        ParseQuery<Note> query = ParseQuery.getQuery(Note.class);
+        query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<Note>() {
+            @Override
+            public void done(List<Note> notesList, com.parse.ParseException e) {
+                if (e != null) {
+                    Log.e("MainActivity", "Issue with getting notes", e);
+                    return;
+                }
+
+                for(Note n : notesList) {
+                    int stringLength = n.getTitle().length();
+                    String substring;
+
+                    for (int i = 0; i < stringLength; i++) {
+                        for (int j = i + 1; j <= stringLength; j++) {
+                            substring = n.getTitle().substring(i,j).toLowerCase();
+                            if(substrings.containsKey(substring)) {
+                                if (!substrings.get(substring).contains(n)) {
+                                    substrings.get(substring).add(n);
+                                }
+                            } else {
+                                substrings.put(substring, new ArrayList<>());
+                                substrings.get(substring).add(n);
+                            }
+                        }
+
+                    }
+                }
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,12 +136,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         //binding.rvGoals.setAdapter(goalAdapter);
         queryGoals();
 
-        map = new HashMap<>();
         notesSearch = new ArrayList<>();
         searchAdapter = new SearchAdapter(this, notesSearch, onClickListenerSearch);
         binding.rvSearchMain.setLayoutManager(new LinearLayoutManager(this));
         binding.rvSearchMain.setAdapter(searchAdapter);
-        querySubstrings();
 
         binding.ibUserIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,8 +163,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 binding.rvSearchMain.setVisibility(View.VISIBLE);
                 notesSearch.clear();
                 String text = s.toString().toLowerCase();
-                if(!text.equals("") && map.get(text) != null) {
-                    notesSearch.addAll(map.get(text));
+                if(!text.equals("") && substrings.get(text) != null) {
+                    notesSearch.addAll(substrings.get(text));
                 }
                 searchAdapter.notifyDataSetChanged();
             }
@@ -191,21 +215,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private void queryGoals() {
     }
 
-    private void querySubstrings() {
-        ParseQuery<Substring> query = ParseQuery.getQuery(Substring.class);
-        query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
-        query.findInBackground(new FindCallback<Substring>() {
-            @Override
-            public void done(List<Substring> substringList, com.parse.ParseException e) {
-                if (e != null) {
-                    Log.e("MainActivity", "Issue with getting substring", e);
-                    return;
-                }
-                objectToMap(substringList.get(0).getMap());
-            }
-        });
-    }
-
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
@@ -254,22 +263,5 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         }
     }
 
-    private void objectToMap(JSONObject object) {
-        Iterator<String> keys = object.keys();
-        while(keys.hasNext()) {
-            String key = keys.next();
-            List<Note> listMap = new ArrayList<>();
-            try {
-                if (object.get(key) instanceof JSONArray) {
-                    for (int i = 0; i < ((JSONArray) object.get(key)).length(); i++) {
-                        Note noteObj = new Gson().fromJson(((JSONArray) object.get(key)).get(i).toString(), Note.class);
-                        listMap.add(noteObj);
-                    }
-                    map.put(key, listMap);
-                }
-            } catch (JSONException jsonException) {
-                jsonException.printStackTrace();
-            }
-        }
-    }
+
 }

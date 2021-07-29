@@ -21,9 +21,7 @@ import com.codepath.noteit.R;
 import com.codepath.noteit.adapters.NoteImagesAdapter;
 import com.codepath.noteit.databinding.ActivityNoteEditorBinding;
 import com.codepath.noteit.models.Note;
-import com.codepath.noteit.models.Substring;
 import com.codepath.noteit.models.Tag;
-import com.google.gson.Gson;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -33,18 +31,11 @@ import com.parse.SaveCallback;
 import com.plattysoft.leonids.ParticleSystem;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
-import static java.util.Collections.reverse;
 
 
 public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
@@ -55,8 +46,6 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
     ActivityNoteEditorBinding binding;
     NoteImagesAdapter adapter;
     List<Bitmap> images;
-    Map<String, List<Note>> map;
-    Substring substring;
     File photoFile;
     Note note;
     Tag tagSave;
@@ -75,12 +64,9 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
 
         images = new ArrayList<>();
         adapter = new NoteImagesAdapter(this, images);
-        map = new HashMap<>();
 
         binding.rvImages.setLayoutManager(new GridLayoutManager(this, 3));
         binding.rvImages.setAdapter(adapter);
-
-        querySubstrings();
 
         binding.ibSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,19 +143,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                 returnMain();
             }
         });
-
         addNoteToMap();
-
-        substring.setMap(mapToObject());
-        substring.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.e("NoteEditor", "Error while saving substrings", e);
-                    return;
-                }
-            }
-        });
     }
 
     public void addNoteToMap() {
@@ -179,72 +153,16 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
         for (int i = 0; i < stringLength; i++) {
             for (int j = i + 1; j <= stringLength; j++) {
                 substr = note.getTitle().substring(i,j).toLowerCase();
-                if(map.containsKey(substr)) {
-                    if (!map.get(substr).contains(note)) {
-                        map.get(substr).add(note);
+                if(MainActivity.substrings.containsKey(substr)) {
+                    if (!MainActivity.substrings.get(substr).contains(note)) {
+                        MainActivity.substrings.get(substr).add(note);
                     }
                 } else {
-                    map.put(substr, new ArrayList<>());
-                    map.get(substr).add(note);
+                    MainActivity.substrings.put(substr, new ArrayList<>());
+                    MainActivity.substrings.get(substr).add(note);
                 }
             }
-
         }
-    }
-
-    private void querySubstrings() {
-        ParseQuery<Substring> query = ParseQuery.getQuery(Substring.class);
-        query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
-        query.findInBackground(new FindCallback<Substring>() {
-            @Override
-            public void done(List<Substring> substringList, com.parse.ParseException e) {
-                if (e != null) {
-                    Log.e("MainActivity", "Issue with getting substring", e);
-                    return;
-                }
-                objectToMap(substringList.get(0).getMap());
-                substring = substringList.get(0);
-            }
-        });
-    }
-
-    private void objectToMap(JSONObject object) {
-        Iterator<String> keys = object.keys();
-        while(keys.hasNext()) {
-            String key = keys.next();
-            List<Note> listMap = new ArrayList<>();
-            try {
-                if (object.get(key) instanceof JSONArray) {
-                    for (int i = 0; i < ((JSONArray) object.get(key)).length(); i++) {
-                        Note noteObj = new Gson().fromJson(((JSONArray) object.get(key)).get(i).toString(), Note.class);
-                        listMap.add(noteObj);
-                    }
-                    map.put(key, listMap);
-                }
-            } catch (JSONException jsonException) {
-                jsonException.printStackTrace();
-            }
-        }
-    }
-
-    private JSONObject mapToObject() {
-        JSONObject objMap = new JSONObject();
-        JSONArray arr2;
-
-        for (String key : map.keySet()) {
-            arr2 = new JSONArray();
-
-            for (Note noteIt : map.get(key)) {
-                arr2.put(noteIt);
-            }
-
-            try {
-                objMap.put(key, arr2);
-            } catch (JSONException jsonException) {
-                jsonException.printStackTrace();
-            }
-        }
-        return objMap;
     }
 
     private void addTag() {
