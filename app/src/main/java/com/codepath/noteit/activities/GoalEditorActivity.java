@@ -27,6 +27,9 @@ import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Reminder;
 import com.codepath.noteit.models.Tag;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -34,12 +37,15 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -197,6 +203,7 @@ public class GoalEditorActivity extends AppCompatActivity {
         goal.setName(name);
         goal.setTotalReviews(Integer.parseInt(amount));
         goal.setReviewed(0);
+        goal.setCreatedBy(ParseUser.getCurrentUser());
 
         JSONArray remindersJSON = new JSONArray();
 
@@ -304,6 +311,25 @@ public class GoalEditorActivity extends AppCompatActivity {
                 for (Note note : notesList) {
                     addNoteToMap(note);
                 }
+
+                //From map to JSONobject
+                JSONObject objMap = new JSONObject();
+                JSONArray arr2;
+
+                for (String key : mapNotes.keySet()) {
+                    arr2 = new JSONArray();
+
+                    for (Note noteIt : mapNotes.get(key)) {
+                        arr2.put(noteIt);
+                    }
+
+                    try {
+                        objMap.put(key, arr2);
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
+                }
+
             }
         });
 
@@ -326,16 +352,18 @@ public class GoalEditorActivity extends AppCompatActivity {
 
     public void addNoteToMap(Note n) {
         int stringLength = n.getTitle().length();
+        String substring;
 
         for (int i = 0; i < stringLength; i++) {
             for (int j = i + 1; j <= stringLength; j++) {
-                if(mapNotes.containsKey(n.getTitle().substring(i,j).toLowerCase())) {
-                    if (!mapNotes.get(n.getTitle().substring(i,j).toLowerCase()).contains(n)) {
-                        mapNotes.get(n.getTitle().substring(i,j).toLowerCase()).add(n);
+                substring = n.getTitle().substring(i,j).toLowerCase();
+                if(mapNotes.containsKey(substring)) {
+                    if (!mapNotes.get(substring).contains(n)) {
+                        mapNotes.get(substring).add(n);
                     }
                 } else {
-                    mapNotes.put(n.getTitle().substring(i,j).toLowerCase(), new ArrayList<>());
-                    mapNotes.get(n.getTitle().substring(i,j).toLowerCase()).add(n);
+                    mapNotes.put(substring, new ArrayList<>());
+                    mapNotes.get(substring).add(n);
                 }
             }
 
