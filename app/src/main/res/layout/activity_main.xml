@@ -6,29 +6,42 @@
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity">
 
-    <SearchView
-        android:id="@+id/svSearch"
-        android:layout_width="314dp"
+    <EditText
+        android:id="@+id/etSearchMain"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
         android:background="@drawable/rounded_edittext"
-        android:hint="Search"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:hint="Search for note or tag"
+        android:paddingStart="30dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="5dp"
+        tools:layout_editor_absoluteX="53dp"
+        tools:layout_editor_absoluteY="129dp" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignStart="@+id/etSearchMain"
+        android:layout_alignTop="@+id/etSearchMain"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="8dp"
+        android:background="#009E3D3D"
+        app:srcCompat="@drawable/search_icon"
+        app:tint="#515151" />
 
     <ImageButton
         android:id="@+id/ibUserIcon"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="20dp"
-        android:layout_toEndOf="@+id/svSearch"
+        android:layout_toEndOf="@+id/etSearchMain"
         android:background="@drawable/user_icon"
         android:clickable="true" />
 
@@ -36,10 +49,10 @@
         android:id="@+id/tvGoals"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/svSearch"
+        android:layout_below="@+id/etSearchMain"
         android:layout_alignParentStart="true"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="5dp"
         android:text="Goals"
         android:textColor="@color/black"
         android:textSize="24sp" />
@@ -77,6 +90,17 @@
         android:layout_marginStart="22dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSearchMain"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/etSearchMain"
+        android:layout_marginStart="50dp"
+        android:layout_marginBottom="0dp"
+        android:visibility="gone">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
