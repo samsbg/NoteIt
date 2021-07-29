@@ -23,12 +23,14 @@ import com.codepath.noteit.databinding.ActivityNoteEditorBinding;
 import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Substring;
 import com.codepath.noteit.models.Tag;
+import com.google.gson.Gson;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.plattysoft.leonids.ParticleSystem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -111,6 +113,16 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                 addTag();
             }
         });
+
+        binding.btnReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ParticleSystem(NoteEditorActivity.this, 80, R.drawable.confeti2, (long) 1000)
+                        .setSpeedRange(0.2f, 0.5f)
+                        .oneShot(binding.btnReview, 40);
+
+            }
+        });
     }
 
     private void saveNote() {
@@ -162,18 +174,18 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
 
     public void addNoteToMap() {
         int stringLength = note.getTitle().length();
-        String substring;
+        String substr;
 
         for (int i = 0; i < stringLength; i++) {
             for (int j = i + 1; j <= stringLength; j++) {
-                substring = note.getTitle().substring(i,j).toLowerCase();
-                if(map.containsKey(substring)) {
-                    if (!map.get(substring).contains(note)) {
-                        map.get(substring).add(note);
+                substr = note.getTitle().substring(i,j).toLowerCase();
+                if(map.containsKey(substr)) {
+                    if (!map.get(substr).contains(note)) {
+                        map.get(substr).add(note);
                     }
                 } else {
-                    map.put(substring, new ArrayList<>());
-                    map.get(substring).add(note);
+                    map.put(substr, new ArrayList<>());
+                    map.get(substr).add(note);
                 }
             }
 
@@ -204,7 +216,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
             try {
                 if (object.get(key) instanceof JSONArray) {
                     for (int i = 0; i < ((JSONArray) object.get(key)).length(); i++) {
-                        Note noteObj = (Note) ((JSONArray) object.get(key)).get(i);
+                        Note noteObj = new Gson().fromJson(((JSONArray) object.get(key)).get(i).toString(), Note.class);
                         listMap.add(noteObj);
                     }
                     map.put(key, listMap);
