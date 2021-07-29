@@ -9,11 +9,15 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.noteit.databinding.ActivityLoginBinding;
+import com.codepath.noteit.models.Substring;
 import com.codepath.noteit.models.User;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
+
+import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -76,8 +80,23 @@ public class LoginActivity extends AppCompatActivity {
                     Log.e("LoginActivity", "Issue with sign up", e);
                     Toast.makeText(LoginActivity.this, "Issue with sign up!", Toast.LENGTH_SHORT);
                     return;
-                } else {
-                    goMainActivity();
+                }
+                goMainActivity();
+            }
+        });
+
+        Substring substring = new Substring();
+        JSONObject obj = new JSONObject();
+
+        substring.setCreatedBy(user);
+        substring.setMap(obj);
+
+        substring.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e("LoginActivity", "Issue with setting up substring", e);
+                    return;
                 }
             }
         });

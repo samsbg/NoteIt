@@ -2,23 +2,27 @@ package com.codepath.noteit.models;
 
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
-
-import java.util.Date;
+import org.json.JSONObject;
 
 @ParseClassName("Substring")
 public class Substring extends ParseObject {
-    private static final String KEY_KEY = "key";
-    private static final String KEY_VALUE = "value";
+    private static final String KEY_MAP = "map";
+    private static final String KEY_CREATED_BY = "createdBy";
 
-    public String getKey() { return getString(KEY_KEY); }
-
-    public void setKey(String key) { put(KEY_KEY, key); }
-
-    public JSONArray getValue() {
-        return getJSONArray(KEY_VALUE);
+    public JSONObject getMap() {
+        return getJSONObject(KEY_MAP);
     }
 
-    public void setValue(JSONArray value) { put(KEY_VALUE, value); }
+    public void setMap(JSONObject map) { put(KEY_MAP, map); }
+
+    public void setCreatedBy(ParseUser user) {
+        put(KEY_CREATED_BY, user);
+    }
+
+    public ParseUser getCreatedBy() {
+        return getParseUser(KEY_CREATED_BY);
+    }
 }
