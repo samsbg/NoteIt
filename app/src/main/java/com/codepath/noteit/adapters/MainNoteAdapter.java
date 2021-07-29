@@ -2,7 +2,9 @@ package com.codepath.noteit.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -13,17 +15,24 @@ import com.codepath.noteit.databinding.ItemNoteBinding;
 import com.codepath.noteit.databinding.ItemPicturesBinding;
 import com.codepath.noteit.models.Note;
 
+import java.util.Date;
 import java.util.List;
 
 public class MainNoteAdapter extends RecyclerView.Adapter<MainNoteAdapter.ViewHolder>{
 
+    public interface OnLongClickListener {
+        void onItemClicked(int position, Note note, View v);
+    }
+
+    OnLongClickListener onLongClickListener;
     Context context;
     List<Note> notes;
 
-    public MainNoteAdapter(Context context, List<Note> notes) {
+    public MainNoteAdapter(Context context, List<Note> notes, OnLongClickListener onLongClickListener) {
         super();
         this.context = context;
         this.notes = notes;
+        this.onLongClickListener = onLongClickListener;
     }
 
     @NonNull
@@ -54,6 +63,13 @@ public class MainNoteAdapter extends RecyclerView.Adapter<MainNoteAdapter.ViewHo
 
         public void bind(final Note note) {
             binding.tvItemTitle.setText(note.getTitle());
+            binding.getRoot().setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    onLongClickListener.onItemClicked(getAdapterPosition(), note, v);
+                    return false;
+                }
+            });
         }
 
     }

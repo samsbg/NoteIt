@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 import com.parse.FindCallback;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -68,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
 
+        View view = binding.getRoot();
+        setContentView(view);
+
         SearchAdapter.OnClickListener onClickListenerSearch = new SearchAdapter.OnClickListener() {
             @Override
             public void onItemClicked(int position) {
@@ -77,8 +82,15 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         };
 
-        View view = binding.getRoot();
-        setContentView(view);
+        MainNoteAdapter.OnLongClickListener onLongClickListenerNote = new MainNoteAdapter.OnLongClickListener() {
+            @Override
+            public void onItemClicked(int position, Note note, View v) {
+                PopupMenu popup = new PopupMenu(MainActivity.this, v);
+                popup.setOnMenuItemClickListener(MainActivity.this);
+                popup.inflate(R.menu.menu_note);
+                popup.show();
+            }
+        };
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -87,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         googleClient = GoogleSignIn.getClient(MainActivity.this, gso);
 
         notes = new ArrayList<>();
-        noteAdapter = new MainNoteAdapter(this, notes);
+        noteAdapter = new MainNoteAdapter(this, notes, onLongClickListenerNote);
         binding.rvNotes.setLayoutManager(new GridLayoutManager(this, 2));
         binding.rvNotes.setAdapter(noteAdapter);
         queryNotes();
@@ -103,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         searchAdapter = new SearchAdapter(this, notesSearch, onClickListenerSearch);
         binding.rvSearchMain.setLayoutManager(new LinearLayoutManager(this));
         binding.rvSearchMain.setAdapter(searchAdapter);
+        querySubstrings();
 
         binding.ibUserIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -249,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             try {
                 if (object.get(key) instanceof JSONArray) {
                     for (int i = 0; i < ((JSONArray) object.get(key)).length(); i++) {
-                        Note noteObj = (Note) ((JSONArray) object.get(key)).get(i);
+                        Note noteObj = new Gson().fromJson(((JSONArray) object.get(key)).get(i).toString(), Note.class);
                         listMap.add(noteObj);
                     }
                     map.put(key, listMap);
