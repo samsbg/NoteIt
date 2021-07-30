@@ -22,6 +22,7 @@ import com.codepath.noteit.adapters.NoteImagesAdapter;
 import com.codepath.noteit.databinding.ActivityNoteEditorBinding;
 import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Tag;
+import com.google.gson.Gson;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -31,11 +32,18 @@ import com.parse.SaveCallback;
 import com.plattysoft.leonids.ParticleSystem;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.Collections.reverse;
 
 
 public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
@@ -46,6 +54,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
     ActivityNoteEditorBinding binding;
     NoteImagesAdapter adapter;
     List<Bitmap> images;
+    Map<String, List<Note>> map;
     File photoFile;
     Note note;
     Tag tagSave;
@@ -64,6 +73,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
 
         images = new ArrayList<>();
         adapter = new NoteImagesAdapter(this, images);
+        map = new HashMap<>();
 
         binding.rvImages.setLayoutManager(new GridLayoutManager(this, 3));
         binding.rvImages.setAdapter(adapter);
@@ -143,6 +153,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                 returnMain();
             }
         });
+
         addNoteToMap();
     }
 
@@ -153,15 +164,16 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
         for (int i = 0; i < stringLength; i++) {
             for (int j = i + 1; j <= stringLength; j++) {
                 substr = note.getTitle().substring(i,j).toLowerCase();
-                if(MainActivity.substrings.containsKey(substr)) {
-                    if (!MainActivity.substrings.get(substr).contains(note)) {
-                        MainActivity.substrings.get(substr).add(note);
+                if(map.containsKey(substr)) {
+                    if (!map.get(substr).contains(note)) {
+                        map.get(substr).add(note);
                     }
                 } else {
-                    MainActivity.substrings.put(substr, new ArrayList<>());
-                    MainActivity.substrings.get(substr).add(note);
+                    map.put(substr, new ArrayList<>());
+                    map.get(substr).add(note);
                 }
             }
+
         }
     }
 

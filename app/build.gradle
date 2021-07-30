@@ -33,6 +33,18 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude("META-INF/*.kotlin_module")
+    }
 }
 
 dependencies {
@@ -53,9 +65,13 @@ dependencies {
 
     //Google Calendar API
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'com.google.android.gms:play-services-auth:19.2.0'
     implementation 'pub.devrel:easypermissions:0.3.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.api-client:google-api-client:1.32.1'
+    implementation 'com.google.android.gms:play-services-auth:19.2.0'
+    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.25.0'
+    implementation 'com.google.http-client:google-http-client-jackson2:1.25.0'
+    implementation 'com.google.apis:google-api-services-people:v1-rev277-1.23.0'
     implementation('com.google.api-client:google-api-client-android:1.25.0') {
         exclude group: 'org.apache.httpcomponents'
     }
@@ -71,5 +87,5 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.7'
 
     //Leonids
-    compile 'com.plattysoft.leonids:LeonidsLib:1.3.2'
+    implementation 'com.plattysoft.leonids:LeonidsLib:1.3.2'
 }

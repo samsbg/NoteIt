@@ -13,7 +13,10 @@ import com.codepath.noteit.models.User;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
+
+import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 

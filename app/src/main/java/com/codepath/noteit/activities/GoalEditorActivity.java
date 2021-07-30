@@ -4,22 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.DatePickerDialog;
-import android.app.SearchManager;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.codepath.noteit.adapters.MainGoalAdapter;
-import com.codepath.noteit.adapters.MainNoteAdapter;
+import com.codepath.noteit.R;
 import com.codepath.noteit.adapters.ReminderAdapter;
 import com.codepath.noteit.adapters.SearchAdapter;
 import com.codepath.noteit.databinding.ActivityGoalEditorBinding;
@@ -27,9 +23,17 @@ import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Reminder;
 import com.codepath.noteit.models.Tag;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
+import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -40,38 +44,48 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.Duration;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static java.util.Collections.reverse;
-
 public class GoalEditorActivity extends AppCompatActivity {
+
+    private static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
+    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private static final String TOKENS_DIRECTORY_PATH = "tokens";
+    private static final String[] SCOPES = {CalendarScopes.CALENDAR_EVENTS};
+    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
     ActivityGoalEditorBinding binding;
     DatePickerDialog.OnDateSetListener mDateSetListener;
-    Date date;
+
+    GoogleAccountCredential mCredential;
 
     SearchAdapter searchAdapter;
     ReminderAdapter reminderAdapter;
 
     Goal goal;
+    Date date;
 
     List<Reminder> reminders;
     List<Integer> daysNum;
     List<Note> notes;
     List<Tag> tags;
+    Map<String, List<Note>> mapNotes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityGoalEditorBinding.inflate(getLayoutInflater());
+
+        init();
 
         View view = binding.getRoot();
         setContentView(view);
@@ -98,6 +112,8 @@ public class GoalEditorActivity extends AppCompatActivity {
         reminders = new ArrayList<>();
         notes = new ArrayList<>();
         tags = new ArrayList<>();
+
+        mapNotes = new HashMap<>();
 
         reminderAdapter = new ReminderAdapter(this, reminders, onClickListenerReminder);
         binding.rvReminders.setLayoutManager(new LinearLayoutManager(this));
@@ -142,7 +158,7 @@ public class GoalEditorActivity extends AppCompatActivity {
         binding.btnSaveGoal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                save();
+                save(v);
             }
         });
 
@@ -171,15 +187,15 @@ public class GoalEditorActivity extends AppCompatActivity {
                 binding.rvSearch.setVisibility(View.VISIBLE);
                 notes.clear();
                 String text = s.toString().toLowerCase();
-                if(!text.equals("") && MainActivity.substrings.get(text) != null) {
-                    notes.addAll(MainActivity.substrings.get(text));
+                if(!text.equals("")) {
+                    notes.addAll(mapNotes.get(text));
                 }
                 searchAdapter.notifyDataSetChanged();
             }
         });
     }
 
-    private void save() {
+    private void save(View view) {
         String name = binding.tvName.getText().toString();
         String amount = binding.etNumber.getText().toString();
 
@@ -213,6 +229,12 @@ public class GoalEditorActivity extends AppCompatActivity {
                     }
                 }
             });
+
+            try {
+                createEvent(view, rem);
+            } catch (Exception e) {
+                Log.e("GoalEditor", "Event not created ", e);
+            }
             remindersJSON.put(rem);
         }
 
@@ -293,6 +315,20 @@ public class GoalEditorActivity extends AppCompatActivity {
         }
     }
 
+    private void init() {
+        // Initialize credentials and service object.
+        mCredential = GoogleAccountCredential.usingOAuth2(
+                getApplicationContext(), Arrays.asList(SCOPES))
+                .setBackOff(new ExponentialBackOff());
+        mCredential.setSelectedAccount(MainActivity.account.getAccount());
+    }
+
+    public void createEvent(View view, Reminder reminder) throws GeneralSecurityException, IOException {
+        new MakeRequestTask(this, mCredential, reminder).execute();
+    }
+
+
+
     private void queryNotes() {
         ParseQuery<Note> query = ParseQuery.getQuery(Note.class);
         query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
@@ -304,6 +340,29 @@ public class GoalEditorActivity extends AppCompatActivity {
                     return;
                 }
                 notes.addAll(notesList);
+
+                for (Note note : notesList) {
+                    addNoteToMap(note);
+                }
+
+                //From map to JSONobject
+                JSONObject objMap = new JSONObject();
+                JSONArray arr2;
+
+                for (String key : mapNotes.keySet()) {
+                    arr2 = new JSONArray();
+
+                    for (Note noteIt : mapNotes.get(key)) {
+                        arr2.put(noteIt);
+                    }
+
+                    try {
+                        objMap.put(key, arr2);
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
+                }
+
             }
         });
 
@@ -323,4 +382,91 @@ public class GoalEditorActivity extends AppCompatActivity {
             }
         });
     }
+
+    // Async Task for creating event using GMail OAuth
+    private class MakeRequestTask extends AsyncTask<Void, Void, String> {
+
+        private com.google.api.services.calendar.Calendar service = null;
+        private Exception mLastError = null;
+        private View view = binding.btnSaveGoal.getRootView();
+        private GoalEditorActivity activity;
+        private Reminder reminder;
+
+        MakeRequestTask(GoalEditorActivity activity, GoogleAccountCredential credential, Reminder reminder) {
+            HttpTransport transport = AndroidHttp.newCompatibleTransport();
+            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+            service = new com.google.api.services.calendar.Calendar.Builder(
+                    transport, jsonFactory, credential)
+                    .setApplicationName(getResources().getString(R.string.app_name))
+                    .build();
+            this.activity = activity;
+            this.reminder = reminder;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                getDataFromApi();
+                return "";
+            } catch (Exception e) {
+                mLastError = e;
+                cancel(true);
+                return null;
+            }
+        }
+
+        private void getDataFromApi() throws IOException {
+            // getting Values for to Address, from Address, Subject and Body
+            String name = goal.getName();
+            Date date = reminder.getDate();
+            try {
+                createEvent(name, date);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Method to create event
+        private void createEvent(String name, Date date) throws IOException {
+            Event event = new Event()
+                    .setSummary("Test from app");
+
+            DateTime startDateTime = new DateTime("2021-05-28T09:00:00-07:00");
+            EventDateTime start = new EventDateTime()
+                    .setDateTime(startDateTime)
+                    .setTimeZone("America/Los_Angeles");
+            event.setStart(start);
+
+            DateTime endDateTime = new DateTime("2021-05-28T17:00:00-07:00");
+            EventDateTime end = new EventDateTime()
+                    .setDateTime(endDateTime)
+                    .setTimeZone("America/Los_Angeles");
+            event.setEnd(end);
+
+            String calendarId = "primary";
+            event = service.events().insert(calendarId, event).execute();
+            Log.d("GoalEditor", "Event created: " + event.getHtmlLink());
+        }
+    }
+
+    public void addNoteToMap(Note n) {
+        int stringLength = n.getTitle().length();
+        String substring;
+
+        for (int i = 0; i < stringLength; i++) {
+            for (int j = i + 1; j <= stringLength; j++) {
+                substring = n.getTitle().substring(i,j).toLowerCase();
+                if(mapNotes.containsKey(substring)) {
+                    if (!mapNotes.get(substring).contains(n)) {
+                        mapNotes.get(substring).add(n);
+                    }
+                } else {
+                    mapNotes.put(substring, new ArrayList<>());
+                    mapNotes.get(substring).add(n);
+                }
+            }
+
+        }
+    }
+
 }

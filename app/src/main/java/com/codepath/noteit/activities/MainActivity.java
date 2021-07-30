@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     List<Goal> goals;
 
     GoogleSignInClient googleClient;
+    static GoogleSignInAccount account;
 
     final int RC_SIGN_IN = 23;
 
@@ -252,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            account = completedTask.getResult(ApiException.class);
 
             Log.d("OAuth login", "User signed in to google");
             Toast.makeText(getApplicationContext(), "Successful login", Toast.LENGTH_LONG).show();
