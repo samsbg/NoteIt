@@ -85,7 +85,9 @@ public class GoalEditorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityGoalEditorBinding.inflate(getLayoutInflater());
 
-        init();
+        if (MainActivity.account != null ) {
+            init();
+        }
 
         View view = binding.getRoot();
         setContentView(view);
@@ -230,11 +232,14 @@ public class GoalEditorActivity extends AppCompatActivity {
                 }
             });
 
-            try {
-                createEvent(view, rem);
-            } catch (Exception e) {
-                Log.e("GoalEditor", "Event not created ", e);
+            if (MainActivity.account != null) {
+                try {
+                    createEvent(view, rem);
+                } catch (Exception e) {
+                    Log.e("GoalEditor", "Event not created ", e);
+                }
             }
+
             remindersJSON.put(rem);
         }
 

@@ -119,6 +119,13 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         };
 
+        MainGoalAdapter.OnClickListener onClickListenerGoal = new MainGoalAdapter.OnClickListener() {
+            @Override
+            public void onItemClicked(int position, Goal goal, View v) {
+
+            }
+        };
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .requestIdToken(getString(R.string.your_web_app_client_id))
@@ -132,9 +139,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         queryNotes();
 
         goals = new ArrayList<>();
-        //goalAdapter = new MainGoalAdapter(this, goals);
+        goalAdapter = new MainGoalAdapter(this, goals, onClickListenerGoal);
         binding.rvGoals.setLayoutManager(new LinearLayoutManager(this));
-        //binding.rvGoals.setAdapter(goalAdapter);
+        binding.rvGoals.setAdapter(goalAdapter);
         queryGoals();
 
         notesSearch = new ArrayList<>();
@@ -214,6 +221,21 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
     private void queryGoals() {
+        ParseQuery<Goal> query = ParseQuery.getQuery(Goal.class);
+        query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<Goal>() {
+            @Override
+            public void done(List<Goal> goalsList, com.parse.ParseException e) {
+                if (e != null) {
+                    Log.e("MainActivity", "Issue with getting notes", e);
+                    return;
+                }
+                reverse(goalsList);
+                goals.addAll(goalsList);
+                Log.d("MainActivity", "Size of list goal " + goals.size());
+                goalAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -263,6 +285,4 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             Toast.makeText(getApplicationContext(), "Error while signing in, code="+ e.getStatusCode(), Toast.LENGTH_LONG).show();
         }
     }
-
-
 }

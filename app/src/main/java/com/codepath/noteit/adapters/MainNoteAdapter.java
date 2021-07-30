@@ -1,8 +1,6 @@
 package com.codepath.noteit.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +8,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.codepath.noteit.databinding.ItemNoteBinding;
-import com.codepath.noteit.databinding.ItemPicturesBinding;
 import com.codepath.noteit.models.Note;
 
-import java.util.Date;
 import java.util.List;
 
 public class MainNoteAdapter extends RecyclerView.Adapter<MainNoteAdapter.ViewHolder>{
@@ -71,6 +66,5 @@ public class MainNoteAdapter extends RecyclerView.Adapter<MainNoteAdapter.ViewHo
                 }
             });
         }
-
     }
 }
