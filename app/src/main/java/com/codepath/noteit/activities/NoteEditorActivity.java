@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.codepath.noteit.R;
 import com.codepath.noteit.adapters.NoteImagesAdapter;
 import com.codepath.noteit.databinding.ActivityNoteEditorBinding;
+import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Tag;
 import com.google.gson.Gson;
@@ -37,7 +39,9 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -70,8 +74,52 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
         setContentView(view);
 
         note = new Note();
-
         images = new ArrayList<>();
+
+        if (getIntent().getParcelableExtra("NOTE") != null) {
+            note = (Note) getIntent().getParcelableExtra("NOTE");
+            binding.tvTitle.setText(note.getTitle());
+            binding.tvContent.setText(note.getContent());
+            if(note.getImages() != null) {
+                for (int i = 0; i < note.getImages().length(); i++) {
+                    try {
+                        JSONObject jsonObject = (JSONObject) note.getImages().getJSONObject(i);
+                        byte[] byteArray =  Base64.decode(jsonObject.getString("url"), Base64.DEFAULT) ;
+                        images.add(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
+                    } catch (JSONException e) {
+                        Log.e("NoteEditor", "Issue making bitmap " + e);
+                    }
+                }
+            }
+        }
+
+        if (getIntent().getParcelableExtra("GOAL") != null) {
+            Goal goal = (Goal) getIntent().getParcelableExtra("GOAL");
+            note = (Note) getIntent().getParcelableExtra("NOTE_GOAL");
+            binding.tvTitle.setText(note.getTitle());
+            binding.tvContent.setText(note.getContent());
+            if(note.getImages() != null) {
+                images = (List<Bitmap>) note.getImages();
+            }
+            binding.btnReview.setVisibility(View.VISIBLE);
+
+            binding.btnReview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new ParticleSystem(NoteEditorActivity.this, 80, R.drawable.confeti2, (long) 1000)
+                            .setSpeedRange(0.2f, 0.5f)
+                            .oneShot(binding.btnReview, 40);
+                    if (goal.getReviewed() < goal.getTotalReviews()) {
+                        goal.setReviewed(goal.getReviewed() + 1);
+                        if (goal.getReviewed() == goal.getTotalReviews()) {
+                            goal.setCompletedBy(Calendar.getInstance().getTime());
+                        }
+                    }
+
+                }
+            });
+        }
+
         adapter = new NoteImagesAdapter(this, images);
         map = new HashMap<>();
 
@@ -110,15 +158,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
             }
         });
 
-        binding.btnReview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new ParticleSystem(NoteEditorActivity.this, 80, R.drawable.confeti2, (long) 1000)
-                        .setSpeedRange(0.2f, 0.5f)
-                        .oneShot(binding.btnReview, 40);
 
-            }
-        });
     }
 
     private void saveNote() {

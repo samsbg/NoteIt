@@ -1,5 +1,7 @@
 package com.codepath.noteit.models;
 
+import android.os.Parcelable;
+
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -7,7 +9,7 @@ import com.parse.ParseUser;
 import org.json.JSONArray;
 
 @ParseClassName("Note")
-public class Note extends ParseObject {
+public class Note extends ParseObject implements Parcelable {
 
     private static final String KEY_TITLE = "title";
     private static final String KEY_CONTENT = "content";

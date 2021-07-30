@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -33,6 +34,7 @@ import com.parse.FindCallback;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -109,6 +111,15 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         };
 
+        MainNoteAdapter.OnClickListener onClickListenerNote = new MainNoteAdapter.OnClickListener() {
+            @Override
+            public void onItemClicked(int position, Note note, View v) {
+                Intent i = new Intent(MainActivity.this, NoteEditorActivity.class);
+                i.putExtra("NOTE", note);
+                startActivity(i);
+            }
+        };
+
         MainNoteAdapter.OnLongClickListener onLongClickListenerNote = new MainNoteAdapter.OnLongClickListener() {
             @Override
             public void onItemClicked(int position, Note note, View v) {
@@ -122,7 +133,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         MainGoalAdapter.OnClickListener onClickListenerGoal = new MainGoalAdapter.OnClickListener() {
             @Override
             public void onItemClicked(int position, Goal goal, View v) {
-
+                if(goal.getNote() != null) {
+                    Intent i = new Intent(MainActivity.this, NoteEditorActivity.class);
+                    i.putExtra("GOAL", goal);
+                    i.putExtra("NOTE_GOAL", goal.getNote());
+                    startActivity(i);
+                }
             }
         };
 
@@ -133,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         googleClient = GoogleSignIn.getClient(MainActivity.this, gso);
 
         notes = new ArrayList<>();
-        noteAdapter = new MainNoteAdapter(this, notes, onLongClickListenerNote);
+        noteAdapter = new MainNoteAdapter(this, notes, onClickListenerNote, onLongClickListenerNote);
         binding.rvNotes.setLayoutManager(new GridLayoutManager(this, 2));
         binding.rvNotes.setAdapter(noteAdapter);
         queryNotes();
