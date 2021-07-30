@@ -288,7 +288,6 @@ public class GoalEditorActivity extends AppCompatActivity {
 
         reminders.clear();
 
-        String name = binding.tvName.getText().toString();
         String amount = binding.etNumber.getText().toString();
 
         if (amount.equals("")) {
@@ -311,7 +310,7 @@ public class GoalEditorActivity extends AppCompatActivity {
         for (int i = 0; i < daysNum.size(); i++) {
             Reminder rem = new Reminder();
             Calendar c = Calendar.getInstance();
-            c.setTime(date);
+            c.setTime(currentDate);
             c.add(Calendar.DATE, daysNum.get(i));
             rem.setDate(c.getTime());
             rem.setCreatedBy(ParseUser.getCurrentUser());
@@ -331,8 +330,6 @@ public class GoalEditorActivity extends AppCompatActivity {
     public void createEvent(View view, Reminder reminder) throws GeneralSecurityException, IOException {
         new MakeRequestTask(this, mCredential, reminder).execute();
     }
-
-
 
     private void queryNotes() {
         ParseQuery<Note> query = ParseQuery.getQuery(Note.class);
