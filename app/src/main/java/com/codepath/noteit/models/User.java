@@ -14,6 +14,7 @@ public class User extends ParseUser{
     private static final String KEY_USERNAME = "username";
     private static final String KEY_COMPLETED = "completed";
     private static final String KEY_REVIEWED = "reviewed";
+    private static final String KEY_CALENDAR_ID = "calendarId";
 
     public String getId() {
         return getString(KEY_ID);
@@ -41,5 +42,13 @@ public class User extends ParseUser{
 
     public void setReviewed(int reviewed) {
         put(KEY_REVIEWED, reviewed);
+    }
+
+    public String getCalendarId() {
+        return getString(KEY_CALENDAR_ID);
+    }
+
+    public void setCalendarId(String calendar) {
+        put(KEY_CALENDAR_ID, calendar);
     }
 }

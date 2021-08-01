@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,7 +14,9 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.Toast;
 
-import com.codepath.noteit.R;
+import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
+import com.codepath.noteit.GoogleCalendarClient;
+import com.codepath.noteit.NoteItApp;
 import com.codepath.noteit.adapters.ReminderAdapter;
 import com.codepath.noteit.adapters.SearchAdapter;
 import com.codepath.noteit.databinding.ActivityGoalEditorBinding;
@@ -23,17 +24,10 @@ import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Reminder;
 import com.codepath.noteit.models.Tag;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.http.HttpTransport;
+import com.codepath.noteit.models.User;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.DateTime;
-import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -44,16 +38,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import okhttp3.Headers;
 
 public class GoalEditorActivity extends AppCompatActivity {
 
@@ -66,7 +59,7 @@ public class GoalEditorActivity extends AppCompatActivity {
     ActivityGoalEditorBinding binding;
     DatePickerDialog.OnDateSetListener mDateSetListener;
 
-    GoogleAccountCredential mCredential;
+    private GoogleCalendarClient client;
 
     SearchAdapter searchAdapter;
     ReminderAdapter reminderAdapter;
@@ -84,10 +77,6 @@ public class GoalEditorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityGoalEditorBinding.inflate(getLayoutInflater());
-
-        if (MainActivity.account != null ) {
-            init();
-        }
 
         View view = binding.getRoot();
         setContentView(view);
@@ -198,6 +187,8 @@ public class GoalEditorActivity extends AppCompatActivity {
     }
 
     private void save(View view) {
+        client = NoteItApp.getRestClient(GoalEditorActivity.this);
+
         String name = binding.tvName.getText().toString();
         String amount = binding.etNumber.getText().toString();
 
@@ -234,13 +225,35 @@ public class GoalEditorActivity extends AppCompatActivity {
 
             if (MainActivity.account != null) {
                 try {
-                    createEvent(view, rem);
+                    client.createEvent(((User) ParseUser.getCurrentUser()).getCalendarId(), goal.getName(), rem.getDate(), new JsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Headers headers, JSON json) {
+
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+
+                        }
+                    });
                 } catch (Exception e) {
                     Log.e("GoalEditor", "Event not created ", e);
                 }
             }
 
             remindersJSON.put(rem);
+
+            client.createEvent(((User) ParseUser.getCurrentUser()).getCalendarId(), goal.getName(), rem.getDate(), new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Headers headers, JSON json) {
+                    Log.d("MainActivity", "Success in creating event");
+                }
+
+                @Override
+                public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                    Log.d("MainActivity", "Error in creating event " + statusCode + response);
+                }
+            });
         }
 
         goal.setReminders(remindersJSON);
@@ -319,18 +332,6 @@ public class GoalEditorActivity extends AppCompatActivity {
         }
     }
 
-    private void init() {
-        // Initialize credentials and service object.
-        mCredential = GoogleAccountCredential.usingOAuth2(
-                getApplicationContext(), Arrays.asList(SCOPES))
-                .setBackOff(new ExponentialBackOff());
-        mCredential.setSelectedAccount(MainActivity.account.getAccount());
-    }
-
-    public void createEvent(View view, Reminder reminder) throws GeneralSecurityException, IOException {
-        new MakeRequestTask(this, mCredential, reminder).execute();
-    }
-
     private void queryNotes() {
         ParseQuery<Note> query = ParseQuery.getQuery(Note.class);
         query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
@@ -383,72 +384,6 @@ public class GoalEditorActivity extends AppCompatActivity {
                 tags.addAll(tagsList);
             }
         });
-    }
-
-    // Async Task for creating event using GMail OAuth
-    private class MakeRequestTask extends AsyncTask<Void, Void, String> {
-
-        private com.google.api.services.calendar.Calendar service = null;
-        private Exception mLastError = null;
-        private View view = binding.btnSaveGoal.getRootView();
-        private GoalEditorActivity activity;
-        private Reminder reminder;
-
-        MakeRequestTask(GoalEditorActivity activity, GoogleAccountCredential credential, Reminder reminder) {
-            HttpTransport transport = AndroidHttp.newCompatibleTransport();
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            service = new com.google.api.services.calendar.Calendar.Builder(
-                    transport, jsonFactory, credential)
-                    .setApplicationName(getResources().getString(R.string.app_name))
-                    .build();
-            this.activity = activity;
-            this.reminder = reminder;
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            try {
-                getDataFromApi();
-                return "";
-            } catch (Exception e) {
-                mLastError = e;
-                cancel(true);
-                return null;
-            }
-        }
-
-        private void getDataFromApi() throws IOException {
-            // getting Values for to Address, from Address, Subject and Body
-            String name = goal.getName();
-            Date date = reminder.getDate();
-            try {
-                createEvent(name, date);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        // Method to create event
-        private void createEvent(String name, Date date) throws IOException {
-            Event event = new Event()
-                    .setSummary("Test from app");
-
-            DateTime startDateTime = new DateTime("2021-05-28T09:00:00-07:00");
-            EventDateTime start = new EventDateTime()
-                    .setDateTime(startDateTime)
-                    .setTimeZone("America/Los_Angeles");
-            event.setStart(start);
-
-            DateTime endDateTime = new DateTime("2021-05-28T17:00:00-07:00");
-            EventDateTime end = new EventDateTime()
-                    .setDateTime(endDateTime)
-                    .setTimeZone("America/Los_Angeles");
-            event.setEnd(end);
-
-            String calendarId = "primary";
-            event = service.events().insert(calendarId, event).execute();
-            Log.d("GoalEditor", "Event created: " + event.getHtmlLink());
-        }
     }
 
     public void addNoteToMap(Note n) {
