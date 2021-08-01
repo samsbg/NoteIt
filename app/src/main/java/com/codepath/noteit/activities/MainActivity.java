@@ -35,8 +35,10 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONException;
 
@@ -305,29 +307,39 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
     @Override
     public void onLoginSuccess() {
         Log.d("MainActivity", "Google login successful");
+        createCalendar();
+    }
 
-        /*
+    private void createCalendar() {
+        if (((User) ParseUser.getCurrentUser()).getCalendarId().equals("-")) {
+            client = NoteItApp.getRestClient(MainActivity.this);
 
-        client = NoteItApp.getRestClient(MainActivity.this);
-
-        client.createCalendar("NoteIt", new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                Log.d("MainActivity", "Success in creating calendar");
-                try {
-                    ((User) ParseUser.getCurrentUser()).setCalendarId(json.jsonObject.getString("id"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            client.createCalendar("NoteIt", new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Headers headers, JSON json) {
+                    Log.d("MainActivity", "Success in creating calendar");
+                    try {
+                        ((User) ParseUser.getCurrentUser()).setCalendarId(json.jsonObject.getString("id"));
+                        ((User) ParseUser.getCurrentUser()).saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e != null) {
+                                    Log.e("LoginActivity", "Issue with saving calendar to user", e);
+                                    return;
+                                }
+                            }
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.d("MainActivity", "Error in creating calendar" + statusCode);
-            }
-        });
-
-         */
+                @Override
+                public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                    Log.d("MainActivity", "Error in creating calendar " + statusCode + response);
+                }
+            });
+        }
     }
 
     @Override
