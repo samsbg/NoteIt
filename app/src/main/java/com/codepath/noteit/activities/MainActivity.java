@@ -1,6 +1,7 @@
 package com.codepath.noteit.activities;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -12,12 +13,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
-import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
-import com.codepath.noteit.NoteItApp;
 import com.codepath.noteit.R;
-import com.codepath.noteit.GoogleCalendarClient;
 import com.codepath.noteit.adapters.MainGoalAdapter;
 import com.codepath.noteit.adapters.MainNoteAdapter;
 import com.codepath.noteit.adapters.SearchNoteAdapter;
@@ -26,29 +23,18 @@ import com.codepath.noteit.databinding.ActivityMainBinding;
 import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Tag;
-import com.codepath.noteit.models.User;
-import com.codepath.oauth.OAuthLoginActionBarActivity;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.FindCallback;
-import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
-
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import okhttp3.Headers;
 import static java.util.Collections.reverse;
 
-public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClient> implements PopupMenu.OnMenuItemClickListener  {
+public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener  {
 
     ActivityMainBinding binding;
 
@@ -61,9 +47,6 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
     List<Goal> goals;
     List<Note> notesSearch;
     List<Tag> tagsSearch;
-
-    static GoogleSignInAccount account;
-    private GoogleCalendarClient client;
 
     final int RC_SIGN_IN = 23;
 
@@ -343,76 +326,11 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                 startActivity(k);
                 return true;
             case R.id.iConnectGoogle:
-                getClient().connect();
+                Intent l = new Intent(this, RedirectActivity.class);
+                startActivity(l);
                 return true;
             default:
                 return false;
         }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
-        }
-    }
-
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            account = completedTask.getResult(ApiException.class);
-
-            Log.d("OAuth login", "User signed in to google");
-            Toast.makeText(getApplicationContext(), "Successful login", Toast.LENGTH_LONG).show();
-
-        } catch (ApiException e) {
-            Log.w("OAuth login", "signInResult:failed code=" + e.getStatusCode());
-            Toast.makeText(getApplicationContext(), "Error while signing in, code="+ e.getStatusCode(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    public void onLoginSuccess() {
-        Log.d("MainActivity", "Google login successful");
-        createCalendar();
-    }
-
-    private void createCalendar() {
-        if (((User) ParseUser.getCurrentUser()).getCalendarId().equals("-")) {
-            client = NoteItApp.getRestClient(MainActivity.this);
-
-            client.createCalendar("NoteIt", new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Headers headers, JSON json) {
-                    Log.d("MainActivity", "Success in creating calendar");
-                    try {
-                        ((User) ParseUser.getCurrentUser()).setCalendarId(json.jsonObject.getString("id"));
-                        ((User) ParseUser.getCurrentUser()).saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e != null) {
-                                    Log.e("LoginActivity", "Issue with saving calendar to user", e);
-                                    return;
-                                }
-                            }
-                        });
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                    Log.d("MainActivity", "Error in creating calendar " + statusCode + response);
-                }
-            });
-        }
-    }
-
-    @Override
-    public void onLoginFailure(Exception e) {
-        Toast.makeText(getApplicationContext(), "There was a problem connecting, try again later", Toast.LENGTH_SHORT).show();
-        Log.e("MainActivity", "Google login error " + e);
     }
 }
