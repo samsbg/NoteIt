@@ -20,6 +20,7 @@ import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +34,11 @@ public class TagActivity extends AppCompatActivity implements PopupMenu.OnMenuIt
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tag);
         
         binding = ActivityTagBinding.inflate(getLayoutInflater());
+
+        View view = binding.getRoot();
+        setContentView(view);
 
         tag = getIntent().getParcelableExtra("TAG");
         
@@ -64,6 +67,7 @@ public class TagActivity extends AppCompatActivity implements PopupMenu.OnMenuIt
         List<Note> notes = new ArrayList<>();
         Gson gson = new GsonBuilder().create();
 
+        /*
         if (notesArray != null) {
             for (int i=0;i<notesArray.length();i++){
                 try {
@@ -74,9 +78,32 @@ public class TagActivity extends AppCompatActivity implements PopupMenu.OnMenuIt
             }
         }
 
-        noteAdapter = new MainNoteAdapter(this, notes, onClickListenerNote, onLongClickListenerNote);
-        binding.rvNotes.setLayoutManager(new GridLayoutManager(this, 2));
-        binding.rvNotes.setAdapter(noteAdapter);
+         */
+
+        for (int i=0;i<notesArray.length();i++) {
+            try {
+                JSONObject jObj = notesArray.getJSONObject(i);
+                Note n = new Note();
+
+                n.setObjectId(jObj.getString("objectId"));
+                n.setCreatedBy(ParseUser.getCurrentUser());
+                n.setTitle(jObj.getString("title"));
+                n.setContent(jObj.getString("content"));
+
+                if (jObj.getJSONArray("images") != null) {
+                    n.setImages(jObj.getJSONArray("images"));
+                }
+
+                notes.add(n);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            noteAdapter = new MainNoteAdapter(this, notes, onClickListenerNote, onLongClickListenerNote);
+            binding.rvNotes.setLayoutManager(new GridLayoutManager(this, 2));
+            binding.rvNotes.setAdapter(noteAdapter);
+        }
     }
 
     @Override
