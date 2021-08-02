@@ -24,6 +24,7 @@ import com.codepath.noteit.databinding.ActivityNoteEditorBinding;
 import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Tag;
+import com.codepath.noteit.models.User;
 import com.google.gson.Gson;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -98,9 +99,11 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
             note = (Note) getIntent().getParcelableExtra("NOTE_GOAL");
             binding.tvTitle.setText(note.getTitle());
             binding.tvContent.setText(note.getContent());
+            /*
             if(note.getImages() != null) {
                 images = (List<Bitmap>) note.getImages();
             }
+             */
             binding.btnReview.setVisibility(View.VISIBLE);
 
             binding.btnReview.setOnClickListener(new View.OnClickListener() {
@@ -111,11 +114,31 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                             .oneShot(binding.btnReview, 40);
                     if (goal.getReviewed() < goal.getTotalReviews()) {
                         goal.setReviewed(goal.getReviewed() + 1);
+                        User user = (User) ParseUser.getCurrentUser();
+                        user.setReviewed(user.getReviewed() + 1);
                         if (goal.getReviewed() == goal.getTotalReviews()) {
                             goal.setCompletedBy(Calendar.getInstance().getTime());
+                            user.setCompleted(user.getCompleted() + 1);
                         }
+                        user.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e != null) {
+                                    Log.e("NoteEditor", "Error while saving user " + e);
+                                }
+                            }
+                        });
+                        goal.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e != null) {
+                                    Log.e("NoteEditor", "Error while saving user " + e);
+                                }
+                            }
+                        });
                     }
-
+                    Intent i = new Intent(NoteEditorActivity.this, MainActivity.class);
+                    startActivity(i);
                 }
             });
         }

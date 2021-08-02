@@ -60,11 +60,10 @@ public class MainGoalAdapter extends  RecyclerView.Adapter<MainGoalAdapter.ViewH
             binding.tvGoal.setText(goal.getName());
             binding.progressBar.setMax(goal.getTotalReviews());
             binding.progressBar.setProgress(goal.getReviewed());
-            binding.getRoot().setOnLongClickListener(new View.OnLongClickListener() {
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
-                public boolean onLongClick(View v) {
+                public void onClick(View v) {
                     onClickListener.onItemClicked(getAdapterPosition(), goal, v);
-                    return false;
                 }
             });
         }

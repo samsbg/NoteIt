@@ -1,8 +1,10 @@
 package com.codepath.noteit.models;
 
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
@@ -17,7 +19,12 @@ public class Note extends ParseObject implements Parcelable {
     private static final String KEY_CREATED_BY = "createdBy";
 
     public String getTitle() {
-        return getString(KEY_TITLE);
+        try {
+            return fetchIfNeeded().getString(KEY_TITLE);
+        } catch (ParseException e) {
+            Log.e("Goal", "Something has gone terribly wrong with Parse", e);
+        }
+        return "";
     }
 
     public void setTitle(String content) {

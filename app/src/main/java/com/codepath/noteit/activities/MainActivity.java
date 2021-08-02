@@ -246,6 +246,9 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                     notesSearch.addAll(substringsNotes.get(text));
                 }
                 searchNoteAdapter.notifyDataSetChanged();
+                if(notesSearch.isEmpty()) {
+                    binding.tvNotesSep.setVisibility(View.GONE);
+                }
 
                 binding.tvTagsSep.setVisibility(View.VISIBLE);
                 binding.rvSearchMainTag.setVisibility(View.VISIBLE);
@@ -254,6 +257,9 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                     tagsSearch.addAll(substringsTag.get(text));
                 }
                 searchTagAdapter.notifyDataSetChanged();
+                if(tagsSearch.isEmpty()) {
+                    binding.tvTagsSep.setVisibility(View.GONE);
+                }
 
             }
         });
@@ -303,6 +309,7 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
     private void queryGoals() {
         ParseQuery<Goal> query = ParseQuery.getQuery(Goal.class);
         query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
+        query.whereEqualTo("completedBy", null);
         query.findInBackground(new FindCallback<Goal>() {
             @Override
             public void done(List<Goal> goalsList, com.parse.ParseException e) {
