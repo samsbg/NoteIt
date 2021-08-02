@@ -1,5 +1,7 @@
 package com.codepath.noteit.models;
 
+import android.os.Parcelable;
+
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -7,7 +9,7 @@ import com.parse.ParseUser;
 import org.json.JSONArray;
 
 @ParseClassName("Tag")
-public class Tag extends ParseObject {
+public class Tag extends ParseObject implements Parcelable {
 
     private static final String KEY_NAME = "name";
     private static final String KEY_CREATED_BY = "createdBy";

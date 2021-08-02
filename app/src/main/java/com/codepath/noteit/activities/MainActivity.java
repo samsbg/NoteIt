@@ -1,7 +1,6 @@
 package com.codepath.noteit.activities;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -21,16 +20,16 @@ import com.codepath.noteit.R;
 import com.codepath.noteit.GoogleCalendarClient;
 import com.codepath.noteit.adapters.MainGoalAdapter;
 import com.codepath.noteit.adapters.MainNoteAdapter;
-import com.codepath.noteit.adapters.SearchAdapter;
+import com.codepath.noteit.adapters.SearchNoteAdapter;
+import com.codepath.noteit.adapters.SearchTagAdapter;
 import com.codepath.noteit.databinding.ActivityMainBinding;
 import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
+import com.codepath.noteit.models.Tag;
 import com.codepath.noteit.models.User;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -43,7 +42,6 @@ import com.parse.SaveCallback;
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,20 +54,22 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
     MainNoteAdapter noteAdapter;
     MainGoalAdapter goalAdapter;
-    SearchAdapter searchAdapter;
+    SearchNoteAdapter searchNoteAdapter;
+    SearchTagAdapter searchTagAdapter;
 
     List<Note> notes;
-    List<Note> notesSearch;
     List<Goal> goals;
+    List<Note> notesSearch;
+    List<Tag> tagsSearch;
 
     static GoogleSignInAccount account;
     private GoogleCalendarClient client;
 
     final int RC_SIGN_IN = 23;
 
-    public static HashMap<String, List<Note>> substrings;
+    public static HashMap<String, List<Note>> substringsNotes;
     static {
-        substrings = new HashMap<>();
+        substringsNotes = new HashMap<>();
         ParseQuery<Note> query = ParseQuery.getQuery(Note.class);
         query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<Note>() {
@@ -87,13 +87,49 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                     for (int i = 0; i < stringLength; i++) {
                         for (int j = i + 1; j <= stringLength; j++) {
                             substring = n.getTitle().substring(i,j).toLowerCase();
-                            if(substrings.containsKey(substring)) {
-                                if (!substrings.get(substring).contains(n)) {
-                                    substrings.get(substring).add(n);
+                            if(substringsNotes.containsKey(substring)) {
+                                if (!substringsNotes.get(substring).contains(n)) {
+                                    substringsNotes.get(substring).add(n);
                                 }
                             } else {
-                                substrings.put(substring, new ArrayList<>());
-                                substrings.get(substring).add(n);
+                                substringsNotes.put(substring, new ArrayList<>());
+                                substringsNotes.get(substring).add(n);
+                            }
+                        }
+
+                    }
+                }
+            }
+        });
+    }
+
+    public static HashMap<String, List<Tag>> substringsTag;
+    static {
+        substringsTag = new HashMap<>();
+        ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
+        query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<Tag>() {
+            @Override
+            public void done(List<Tag> tagsList, com.parse.ParseException e) {
+                if (e != null) {
+                    Log.e("MainActivity", "Issue with getting notes", e);
+                    return;
+                }
+
+                for(Tag t : tagsList) {
+                    int stringLength = t.getName().length();
+                    String substring;
+
+                    for (int i = 0; i < stringLength; i++) {
+                        for (int j = i + 1; j <= stringLength; j++) {
+                            substring = t.getName().substring(i,j).toLowerCase();
+                            if(substringsTag.containsKey(substring)) {
+                                if (!substringsTag.get(substring).contains(t)) {
+                                    substringsTag.get(substring).add(t);
+                                }
+                            } else {
+                                substringsTag.put(substring, new ArrayList<>());
+                                substringsTag.get(substring).add(t);
                             }
                         }
 
@@ -111,12 +147,21 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
         View view = binding.getRoot();
         setContentView(view);
 
-        SearchAdapter.OnClickListener onClickListenerSearch = new SearchAdapter.OnClickListener() {
+        SearchNoteAdapter.OnClickListener onClickListenerSearchNote = new SearchNoteAdapter.OnClickListener() {
             @Override
-            public void onItemClicked(int position) {
-                binding.etSearchMain.setText(notesSearch.get(position).getTitle());
-                notesSearch.clear();
-                searchAdapter.notifyDataSetChanged();
+            public void onItemClicked(int position, Note note) {
+                Intent i = new Intent(MainActivity.this, NoteEditorActivity.class);
+                i.putExtra("NOTE", note);
+                startActivity(i);
+            }
+        };
+
+        SearchTagAdapter.OnClickListener onClickListenerSearchTag = new SearchTagAdapter.OnClickListener() {
+            @Override
+            public void onItemClicked(int position, Tag tag) {
+                Intent i = new Intent(MainActivity.this, TagActivity.class);
+                i.putExtra("TAG", tag);
+                startActivity(i);
             }
         };
 
@@ -164,9 +209,14 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
         queryGoals();
 
         notesSearch = new ArrayList<>();
-        searchAdapter = new SearchAdapter(this, notesSearch, onClickListenerSearch);
-        binding.rvSearchMain.setLayoutManager(new LinearLayoutManager(this));
-        binding.rvSearchMain.setAdapter(searchAdapter);
+        searchNoteAdapter = new SearchNoteAdapter(this, notesSearch, onClickListenerSearchNote);
+        binding.rvSearchMainNote.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvSearchMainNote.setAdapter(searchNoteAdapter);
+
+        tagsSearch = new ArrayList<>();
+        searchTagAdapter = new SearchTagAdapter(this, tagsSearch, onClickListenerSearchTag);
+        binding.rvSearchMainTag.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvSearchMainTag.setAdapter(searchTagAdapter);
 
         binding.ibUserIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,13 +237,24 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
             @Override
             public void afterTextChanged(Editable s) {
-                binding.rvSearchMain.setVisibility(View.VISIBLE);
-                notesSearch.clear();
                 String text = s.toString().toLowerCase();
-                if(!text.equals("") && substrings.get(text) != null) {
-                    notesSearch.addAll(substrings.get(text));
+
+                binding.tvNotesSep.setVisibility(View.VISIBLE);
+                binding.rvSearchMainNote.setVisibility(View.VISIBLE);
+                notesSearch.clear();
+                if(!text.equals("") && substringsNotes.containsKey(text)) {
+                    notesSearch.addAll(substringsNotes.get(text));
                 }
-                searchAdapter.notifyDataSetChanged();
+                searchNoteAdapter.notifyDataSetChanged();
+
+                binding.tvTagsSep.setVisibility(View.VISIBLE);
+                binding.rvSearchMainTag.setVisibility(View.VISIBLE);
+                tagsSearch.clear();
+                if(!text.equals("") && substringsTag.containsKey(text)) {
+                    tagsSearch.addAll(substringsTag.get(text));
+                }
+                searchTagAdapter.notifyDataSetChanged();
+
             }
         });
 

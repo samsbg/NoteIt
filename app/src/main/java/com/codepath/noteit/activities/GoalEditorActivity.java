@@ -19,7 +19,7 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.codepath.noteit.GoogleCalendarClient;
 import com.codepath.noteit.NoteItApp;
 import com.codepath.noteit.adapters.ReminderAdapter;
-import com.codepath.noteit.adapters.SearchAdapter;
+import com.codepath.noteit.adapters.SearchNoteAdapter;
 import com.codepath.noteit.databinding.ActivityGoalEditorBinding;
 import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
@@ -62,7 +62,7 @@ public class GoalEditorActivity extends AppCompatActivity {
 
     private GoogleCalendarClient client;
 
-    SearchAdapter searchAdapter;
+    SearchNoteAdapter searchNoteAdapter;
     ReminderAdapter reminderAdapter;
 
     Goal goal;
@@ -91,13 +91,13 @@ public class GoalEditorActivity extends AppCompatActivity {
             }
         };
 
-        SearchAdapter.OnClickListener onClickListenerSearch = new SearchAdapter.OnClickListener() {
+        SearchNoteAdapter.OnClickListener onClickListenerSearch = new SearchNoteAdapter.OnClickListener() {
             @Override
-            public void onItemClicked(int position) {
+            public void onItemClicked(int position, Note note) {
                 goal.setNote(notes.get(position));
                 binding.etSearch.setText(notes.get(position).getTitle());
                 notes.clear();
-                searchAdapter.notifyDataSetChanged();
+                searchNoteAdapter.notifyDataSetChanged();
             }
         };
 
@@ -111,9 +111,9 @@ public class GoalEditorActivity extends AppCompatActivity {
         binding.rvReminders.setLayoutManager(new LinearLayoutManager(this));
         binding.rvReminders.setAdapter(reminderAdapter);
 
-        searchAdapter = new SearchAdapter(this, notes, onClickListenerSearch);
+        searchNoteAdapter = new SearchNoteAdapter(this, notes, onClickListenerSearch);
         binding.rvSearch.setLayoutManager(new LinearLayoutManager(this));
-        binding.rvSearch.setAdapter(searchAdapter);
+        binding.rvSearch.setAdapter(searchNoteAdapter);
 
         queryNotes();
         queryTags();
@@ -182,7 +182,7 @@ public class GoalEditorActivity extends AppCompatActivity {
                 if(!text.equals("")) {
                     notes.addAll(mapNotes.get(text));
                 }
-                searchAdapter.notifyDataSetChanged();
+                searchNoteAdapter.notifyDataSetChanged();
             }
         });
     }

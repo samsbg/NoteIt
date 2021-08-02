@@ -89,15 +89,51 @@
         android:layout_alignParentEnd="true"
         android:layout_marginStart="22dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="40dp" />
+        android:layout_marginEnd="40dp" >
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSearchMain"
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/tvNotesSep"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/etSearchMain"
+        android:layout_alignParentStart="true"
         android:layout_marginStart="50dp"
-        android:layout_marginBottom="0dp"
+        android:background="#FFFFFF"
+        android:text="Notes"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSearchMainNote"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvNotesSep"
+        android:layout_marginStart="50dp"
+        android:visibility="gone">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/tvTagsSep"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rvSearchMainNote"
+        android:layout_alignParentStart="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="50dp"
+        android:background="#FFFFFF"
+        android:text="Tags"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSearchMainTag"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvTagsSep"
+        android:layout_marginStart="50dp"
         android:visibility="gone">
 
     </androidx.recyclerview.widget.RecyclerView>

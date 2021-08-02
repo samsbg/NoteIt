@@ -9,21 +9,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codepath.noteit.databinding.ItemSearchBinding;
-import com.codepath.noteit.models.Note;
+import com.codepath.noteit.models.Tag;
 
 import java.util.List;
 
-public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder>{
+public class SearchTagAdapter extends RecyclerView.Adapter<SearchTagAdapter.ViewHolder>{
 
     public interface OnClickListener {
-        void onItemClicked(int position);
+        void onItemClicked(int position, Tag tag);
     }
 
     Context context;
-    OnClickListener clickListener;
-    List<Note> items;
+    SearchTagAdapter.OnClickListener clickListener;
+    List<Tag> items;
 
-    public SearchAdapter(Context context, List<Note> items, OnClickListener clickListener) {
+    public SearchTagAdapter(Context context, List<Tag> items, SearchTagAdapter.OnClickListener clickListener) {
         super();
         this.context = context;
         this.items = items;
@@ -32,14 +32,14 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new SearchAdapter.ViewHolder(ItemSearchBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+    public SearchTagAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new SearchTagAdapter.ViewHolder(ItemSearchBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SearchAdapter.ViewHolder holder, int position) {
-        Note note = items.get(position);
-        holder.bind(note);
+    public void onBindViewHolder(@NonNull SearchTagAdapter.ViewHolder holder, int position) {
+        Tag tag = items.get(position);
+        holder.bind(tag);
     }
 
     @Override
@@ -56,12 +56,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             this.binding = binding;
         }
 
-        public void bind(final Note note) {
-            binding.tvItem.setText(note.getTitle());
+        public void bind(final Tag tag) {
+            binding.tvItem.setText(tag.getName());
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    clickListener.onItemClicked(getLayoutPosition());
+                    clickListener.onItemClicked(getLayoutPosition(), tag);
                 }
             });
         }
