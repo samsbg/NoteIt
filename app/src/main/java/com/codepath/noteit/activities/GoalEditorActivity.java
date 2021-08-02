@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -211,61 +212,62 @@ public class GoalEditorActivity extends AppCompatActivity {
         goal.setReviewed(0);
         goal.setCreatedBy(ParseUser.getCurrentUser());
 
-        JSONArray remindersJSON = new JSONArray();
-
-        for (Reminder rem : reminders) {
-            rem.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e != null) {
-                        Log.e("GoalEditor", "Reminder not saved", e);
-                    }
-                }
-            });
-
-            if (MainActivity.account != null) {
-                try {
-                    client.createEvent(((User) ParseUser.getCurrentUser()).getCalendarId(), goal.getName(), rem.getDate(), new JsonHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Headers headers, JSON json) {
-
-                        }
-
-                        @Override
-                        public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-
-                        }
-                    });
-                } catch (Exception e) {
-                    Log.e("GoalEditor", "Event not created ", e);
-                }
-            }
-
-            remindersJSON.put(rem);
-
-            client.createEvent(((User) ParseUser.getCurrentUser()).getCalendarId(), goal.getName(), rem.getDate(), new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Headers headers, JSON json) {
-                    Log.d("MainActivity", "Success in creating event");
-                }
-
-                @Override
-                public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                    Log.d("MainActivity", "Error in creating event " + statusCode + response);
-                }
-            });
-        }
-
-        goal.setReminders(remindersJSON);
-
         goal.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e != null) {
                     Log.e("GoalEditor", "Issue with saving goal", e);
                 }
+
+                for (Reminder rem : reminders) {
+                    rem.setGoal(goal);
+                    rem.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e != null) {
+                                Log.e("GoalEditor", "Reminder not saved", e);
+                            }
+                        }
+                    });
+
+                    if (client != null) {
+                        try {
+                            client.createEvent(((User) ParseUser.getCurrentUser()).getCalendarId(), goal.getName(), rem.getDate(), new JsonHttpResponseHandler() {
+                                @Override
+                                public void onSuccess(int statusCode, Headers headers, JSON json) {
+
+                                }
+
+                                @Override
+                                public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+
+                                }
+                            });
+                        } catch (Exception e2) {
+                            Log.e("GoalEditor", "Event not created ", e2);
+                        }
+                    }
+
+
+                    client.createEvent(((User) ParseUser.getCurrentUser()).getCalendarId(), goal.getName(), rem.getDate(), new JsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Headers headers, JSON json) {
+                            Log.d("MainActivity", "Success in creating event");
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                            Log.d("MainActivity", "Error in creating event " + statusCode + response);
+                        }
+                    });
+                }
+
             }
         });
+
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+        finish();
     }
 
     public void separateReminders(int beginning, int remindersM, int days) {
@@ -325,6 +327,10 @@ public class GoalEditorActivity extends AppCompatActivity {
             Calendar c = Calendar.getInstance();
             c.setTime(currentDate);
             c.add(Calendar.DATE, daysNum.get(i));
+            c.set(Calendar.MILLISECOND, 0);
+            c.set(Calendar.SECOND, 0);
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.HOUR_OF_DAY, 0);
             rem.setDate(c.getTime());
             rem.setCreatedBy(ParseUser.getCurrentUser());
             reminders.add(rem);

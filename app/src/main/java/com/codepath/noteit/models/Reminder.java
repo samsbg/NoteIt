@@ -10,6 +10,7 @@ import java.util.Date;
 public class Reminder extends ParseObject {
     private static final String KEY_DATE = "date";
     private static final String KEY_CREATED_BY = "createdBy";
+    private static final String KEY_GOAL = "goal";
 
     public Date getDate() {
         return getDate(KEY_DATE);
@@ -21,5 +22,13 @@ public class Reminder extends ParseObject {
 
     public void setCreatedBy(ParseUser user) {
         put(KEY_CREATED_BY, user);
+    }
+
+    public ParseObject getGoal() {
+        return getParseObject(KEY_GOAL);
+    }
+
+    public void setGoal(ParseObject goal) {
+        put(KEY_GOAL, goal);
     }
 }

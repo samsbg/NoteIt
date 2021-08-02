@@ -1,8 +1,10 @@
 package com.codepath.noteit.models;
 
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
@@ -21,10 +23,14 @@ public class Goal extends ParseObject implements Parcelable {
     private static final String KEY_TAG = "tag";
     private static final String KEY_CREATED_BY = "createdBy";
     private static final String KEY_COMPLETED_BY = "completedBy";
-    private static final String KEY_REMINDERS = "reminders";
 
     public String getName() {
-        return getString(KEY_NAME);
+        try {
+            return fetchIfNeeded().getString("name");
+        } catch (ParseException e) {
+            Log.e("Goal", "Something has gone terribly wrong with Parse", e);
+        }
+        return "";
     }
 
     public void setName(String name) {
@@ -85,13 +91,5 @@ public class Goal extends ParseObject implements Parcelable {
 
     public void setCompletedBy(Date date) {
         put(KEY_COMPLETED_BY, date);
-    }
-
-    public JSONArray getReminders() {
-        return getJSONArray(KEY_REMINDERS);
-    }
-
-    public void setReminders(JSONArray reminders) {
-        put(KEY_REMINDERS, reminders);
     }
 }

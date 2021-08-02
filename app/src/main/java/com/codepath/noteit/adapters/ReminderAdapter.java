@@ -12,7 +12,7 @@ import android.widget.DatePicker;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.codepath.noteit.databinding.ItemReminderBinding;
+import com.codepath.noteit.databinding.ItemReminderGoalBinding;
 import com.codepath.noteit.models.Reminder;
 
 import java.util.Calendar;
@@ -39,7 +39,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ReminderAdapter.ViewHolder(ItemReminderBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+        return new ReminderAdapter.ViewHolder(ItemReminderGoalBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
     @Override
@@ -55,9 +55,9 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ItemReminderBinding binding;
+        private ItemReminderGoalBinding binding;
 
-        public ViewHolder(ItemReminderBinding binding) {
+        public ViewHolder(ItemReminderGoalBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
