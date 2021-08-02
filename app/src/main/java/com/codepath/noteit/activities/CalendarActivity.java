@@ -2,16 +2,21 @@ package com.codepath.noteit.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.codepath.noteit.R;
 import com.codepath.noteit.adapters.DayGoalAdapter;
+import com.codepath.noteit.adapters.MainGoalAdapter;
+import com.codepath.noteit.adapters.MainNoteAdapter;
 import com.codepath.noteit.databinding.ActivityCalendarBinding;
 import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Reminder;
@@ -42,6 +47,8 @@ public class CalendarActivity extends AppCompatActivity {
     ActivityCalendarBinding binding;
 
     Map<Date, List<Goal>> reminderMap;
+    List<Goal> goalsBottom;
+    MainGoalAdapter mainGoalAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +59,23 @@ public class CalendarActivity extends AppCompatActivity {
         setContentView(view);
 
         queryReminders(view);
+
+        MainGoalAdapter.OnClickListener onClickListenerGoal = new MainGoalAdapter.OnClickListener() {
+            @Override
+            public void onItemClicked(int position, Goal goal, View v) {
+                if(goal.getNote() != null) {
+                    Intent i = new Intent(CalendarActivity.this, NoteEditorActivity.class);
+                    i.putExtra("GOAL", goal);
+                    i.putExtra("NOTE_GOAL", goal.getNote());
+                    startActivity(i);
+                }
+            }
+        };
+
+        goalsBottom = new ArrayList<>();
+        mainGoalAdapter = new MainGoalAdapter(this, goalsBottom, onClickListenerGoal);
+        binding.rvMainGoals.setLayoutManager(new GridLayoutManager(this, 2));
+        binding.rvMainGoals.setAdapter(mainGoalAdapter);
     }
 
     private void queryReminders(View view) {
@@ -90,14 +114,14 @@ public class CalendarActivity extends AppCompatActivity {
             final TextView calendarDay;
             final RecyclerView goalsDay;
             final DayGoalAdapter goalsDayAdapter;
-            List<Goal> goals;
+            List<Goal> goalsDayList;
 
             public DayViewContainer(@NonNull View view) {
                 super(view);
                 calendarDay = view.findViewById(R.id.tvCalendarDay);
                 goalsDay = view.findViewById(R.id.rvGoalsDay);
-                goals = new ArrayList<>();
-                goalsDayAdapter = new DayGoalAdapter(view.getContext(), goals);
+                goalsDayList = new ArrayList<>();
+                goalsDayAdapter = new DayGoalAdapter(view.getContext(), goalsDayList);
             }
         }
 
@@ -124,11 +148,19 @@ public class CalendarActivity extends AppCompatActivity {
                 container.calendarDay.setText(String.valueOf(day.getDay()));
                 container.goalsDay.setLayoutManager(new LinearLayoutManager(view.getContext()));
                 container.goalsDay.setAdapter(container.goalsDayAdapter);
-                container.goals.clear();
+                container.goalsDayList.clear();
                 if(reminderMap.containsKey(Date.from(day.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()))) {
-                    container.goals.addAll(reminderMap.get(Date.from(day.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant())));
+                    container.goalsDayList.addAll(reminderMap.get(Date.from(day.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant())));
                     container.goalsDayAdapter.notifyDataSetChanged();
                 }
+                container.getView().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        goalsBottom.clear();
+                        goalsBottom.addAll(container.goalsDayList);
+                        mainGoalAdapter.notifyDataSetChanged();
+                    }
+                });
             }
         });
 

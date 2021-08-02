@@ -12,9 +12,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
-        android:layout_marginEnd="25dp"
         android:layout_marginBottom="15dp"
-        android:layout_toStartOf="@+id/progressBar"
         tools:text="Review spanish verbs" />
 
     <ProgressBar
