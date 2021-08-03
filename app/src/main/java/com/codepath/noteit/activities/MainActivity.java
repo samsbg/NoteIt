@@ -62,7 +62,6 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
     List<Note> notesSearch;
     List<Tag> tagsSearch;
 
-    static GoogleSignInAccount account;
     private GoogleCalendarClient client;
 
     final int RC_SIGN_IN = 23;
@@ -347,28 +346,6 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                 return true;
             default:
                 return false;
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
-        }
-    }
-
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            account = completedTask.getResult(ApiException.class);
-
-            Log.d("OAuth login", "User signed in to google");
-            Toast.makeText(getApplicationContext(), "Successful login", Toast.LENGTH_LONG).show();
-
-        } catch (ApiException e) {
-            Log.w("OAuth login", "signInResult:failed code=" + e.getStatusCode());
-            Toast.makeText(getApplicationContext(), "Error while signing in, code="+ e.getStatusCode(), Toast.LENGTH_LONG).show();
         }
     }
 
