@@ -247,19 +247,6 @@ public class GoalEditorActivity extends AppCompatActivity {
                             Log.e("GoalEditor", "Event not created ", e2);
                         }
                     }
-
-
-                    client.createEvent(((User) ParseUser.getCurrentUser()).getCalendarId(), goal.getName(), rem.getDate(), new JsonHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Headers headers, JSON json) {
-                            Log.d("MainActivity", "Success in creating event");
-                        }
-
-                        @Override
-                        public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                            Log.d("MainActivity", "Error in creating event " + statusCode + response);
-                        }
-                    });
                 }
 
             }
