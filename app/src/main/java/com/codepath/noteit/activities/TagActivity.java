@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -12,10 +13,14 @@ import android.widget.PopupMenu;
 import com.codepath.noteit.R;
 import com.codepath.noteit.adapters.MainNoteAdapter;
 import com.codepath.noteit.databinding.ActivityTagBinding;
+import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Tag;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.parse.FindCallback;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -24,6 +29,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Collections.reverse;
 
 public class TagActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
 
@@ -65,45 +72,35 @@ public class TagActivity extends AppCompatActivity implements PopupMenu.OnMenuIt
 
         JSONArray notesArray = tag.getNotes();
         List<Note> notes = new ArrayList<>();
-        Gson gson = new GsonBuilder().create();
-
-        /*
-        if (notesArray != null) {
-            for (int i=0;i<notesArray.length();i++){
-                try {
-                    notes.add(gson.fromJson(String.valueOf(notesArray.getJSONObject(i)), Note.class));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-         */
+        List<String> notesId = new ArrayList<>();
+        Gson gson = new Gson();
 
         for (int i=0;i<notesArray.length();i++) {
             try {
                 JSONObject jObj = notesArray.getJSONObject(i);
-                Note n = new Note();
+                notesId.add(jObj.getString("objectId"));
 
-                n.setObjectId(jObj.getString("objectId"));
-                n.setCreatedBy(ParseUser.getCurrentUser());
-                n.setTitle(jObj.getString("title"));
-                n.setContent(jObj.getString("content"));
-
-                if (jObj.getJSONArray("images") != null) {
-                    n.setImages(jObj.getJSONArray("images"));
-                }
-
-                notes.add(n);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-
-            noteAdapter = new MainNoteAdapter(this, notes, onClickListenerNote, onLongClickListenerNote);
-            binding.rvNotes.setLayoutManager(new GridLayoutManager(this, 2));
-            binding.rvNotes.setAdapter(noteAdapter);
         }
+
+        ParseQuery<Note> query = ParseQuery.getQuery(Note.class);
+        query.whereContainedIn("objectId", notesId);
+        query.findInBackground(new FindCallback<Note>() {
+            @Override
+            public void done(List<Note> notesList, com.parse.ParseException e) {
+                if (e != null) {
+                    Log.e("MainActivity", "Issue with getting notes", e);
+                    return;
+                }
+                notes.addAll(notesList);
+
+                noteAdapter = new MainNoteAdapter(TagActivity.this, notes, onClickListenerNote, onLongClickListenerNote);
+                binding.rvNotes.setLayoutManager(new GridLayoutManager(TagActivity.this, 2));
+                binding.rvNotes.setAdapter(noteAdapter);
+            }
+        });
     }
 
     @Override
