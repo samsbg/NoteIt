@@ -1,6 +1,7 @@
 package com.codepath.noteit.models;
 
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
@@ -21,7 +22,12 @@ public class User extends ParseUser{
     }
 
     public String getUsername() {
-        return getString(KEY_USERNAME);
+        try {
+            return fetchIfNeeded().getString(KEY_USERNAME);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     public void setUsername(String username) {

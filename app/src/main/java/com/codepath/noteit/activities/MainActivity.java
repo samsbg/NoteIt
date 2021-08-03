@@ -186,12 +186,16 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
         MainGoalAdapter.OnClickListener onClickListenerGoal = new MainGoalAdapter.OnClickListener() {
             @Override
             public void onItemClicked(Goal goal) {
+                Intent i;
                 if(goal.getNote() != null) {
-                    Intent i = new Intent(MainActivity.this, NoteEditorActivity.class);
-                    i.putExtra("GOAL", goal);
+                    i = new Intent(MainActivity.this, NoteEditorActivity.class);
                     i.putExtra("NOTE_GOAL", goal.getNote());
-                    startActivity(i);
+                } else {
+                    i = new Intent(MainActivity.this, TagActivity.class);
+                    i.putExtra("TAG", goal.getTag());
                 }
+                i.putExtra("GOAL", goal);
+                startActivity(i);
             }
         };
 

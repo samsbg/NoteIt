@@ -3,6 +3,7 @@ package com.codepath.noteit.models;
 import android.os.Parcelable;
 
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
@@ -16,7 +17,12 @@ public class Tag extends ParseObject implements Parcelable {
     private static final String KEY_NOTES = "notes";
 
     public String getName() {
-        return getString(KEY_NAME);
+        try {
+            return fetchIfNeeded().getString(KEY_NAME);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return"";
     }
 
     public void setName(String name) {

@@ -97,12 +97,12 @@ public class GoalEditorActivity extends AppCompatActivity {
             @Override
             public void onItemClicked(Note note) {
                 goal.setNote(note);
-                notes.clear();
                 binding.etSearch.setText(note.getTitle());
+                notes.clear();
                 binding.tvNotesSepGoal.setVisibility(View.GONE);
                 searchNoteAdapter.notifyDataSetChanged();
 
-                goal.setTag(null);
+                goal.remove("tag");
                 tags.clear();
                 binding.tvTagsSepGoal.setVisibility(View.GONE);
                 searchTagAdapter.notifyDataSetChanged();
@@ -112,14 +112,13 @@ public class GoalEditorActivity extends AppCompatActivity {
         SearchTagAdapter.OnClickListener onClickListenerSearchTag = new SearchTagAdapter.OnClickListener() {
             @Override
             public void onItemClicked(Tag tag) {
-
                 goal.setTag(tag);
-                tags.clear();
                 binding.etSearch.setText(tag.getName());
+                tags.clear();
                 binding.tvTagsSepGoal.setVisibility(View.GONE);
                 searchTagAdapter.notifyDataSetChanged();
 
-                goal.setNote(null);
+                goal.remove("note");
                 notes.clear();
                 binding.tvNotesSepGoal.setVisibility(View.GONE);
                 searchNoteAdapter.notifyDataSetChanged();
@@ -205,27 +204,38 @@ public class GoalEditorActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 String text = s.toString().toLowerCase();
 
+                notes.clear();
+                tags.clear();
+
+                if(text.equals("")) {
+                    goal.remove("tag");
+                    goal.remove("note");
+                    binding.tvNotesSepGoal.setVisibility(View.GONE);
+                    binding.tvTagsSepGoal.setVisibility(View.GONE);
+                    return;
+                }
+
                 binding.tvNotesSepGoal.setVisibility(View.VISIBLE);
                 binding.rvSearchNotes.setVisibility(View.VISIBLE);
-                notes.clear();
-                if(!text.equals("") && MainActivity.substringsNotes.containsKey(text)) {
+
+                if(MainActivity.substringsNotes.containsKey(text)) {
                     notes.addAll(MainActivity.substringsNotes.get(text));
                 }
-                searchNoteAdapter.notifyDataSetChanged();
-                if(notes.isEmpty()) {
+                if (notes.isEmpty()) {
                     binding.tvNotesSepGoal.setVisibility(View.GONE);
                 }
+                searchNoteAdapter.notifyDataSetChanged();
 
                 binding.tvTagsSepGoal.setVisibility(View.VISIBLE);
                 binding.rvSearchTags.setVisibility(View.VISIBLE);
-                tags.clear();
-                if(!text.equals("") && MainActivity.substringsTag.containsKey(text)) {
+
+                if(MainActivity.substringsTag.containsKey(text)) {
                     tags.addAll(MainActivity.substringsTag.get(text));
                 }
-                searchTagAdapter.notifyDataSetChanged();
-                if(tags.isEmpty()) {
+                if (tags.isEmpty()) {
                     binding.tvTagsSepGoal.setVisibility(View.GONE);
                 }
+                searchTagAdapter.notifyDataSetChanged();
             }
         });
     }
