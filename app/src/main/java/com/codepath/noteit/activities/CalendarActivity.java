@@ -32,13 +32,18 @@ import com.parse.ParseUser;
 
 import java.text.DateFormatSymbols;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 import static java.time.YearMonth.now;
 
@@ -74,7 +79,7 @@ public class CalendarActivity extends AppCompatActivity {
 
         goalsBottom = new ArrayList<>();
         mainGoalAdapter = new MainGoalAdapter(this, goalsBottom, onClickListenerGoal);
-        binding.rvMainGoals.setLayoutManager(new GridLayoutManager(this, 2));
+        binding.rvMainGoals.setLayoutManager(new LinearLayoutManager(this));
         binding.rvMainGoals.setAdapter(mainGoalAdapter);
     }
 
@@ -156,6 +161,11 @@ public class CalendarActivity extends AppCompatActivity {
                 container.getView().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        String strDate = day.getDate().toString();
+                        LocalDate aLD = LocalDate.parse(strDate);
+                        DateTimeFormatter dTF = DateTimeFormatter.ofPattern("MMMM dd yyyy");
+                        binding.tvDay.setText(dTF.format(aLD));
+
                         goalsBottom.clear();
                         goalsBottom.addAll(container.goalsDayList);
                         mainGoalAdapter.notifyDataSetChanged();
@@ -172,7 +182,14 @@ public class CalendarActivity extends AppCompatActivity {
 
             @Override
             public void bind(@NonNull MonthViewContainer container, CalendarMonth calendarMonth) {
-                container.calendarMonth.setText(new DateFormatSymbols().getMonths()[calendarMonth.getMonth()-1]);
+                container.calendarMonth.setText((new DateFormatSymbols().getMonths()[calendarMonth.getMonth()-1] + " " + calendarMonth.getYear()));
+            }
+        });
+
+        calendarView.setMonthScrollListener(new Function1<CalendarMonth, Unit>() {
+            @Override
+            public Unit invoke(CalendarMonth calendarMonth) {
+                return Unit.INSTANCE;
             }
         });
 
