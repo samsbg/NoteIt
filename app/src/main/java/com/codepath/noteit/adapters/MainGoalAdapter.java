@@ -60,6 +60,7 @@ public class MainGoalAdapter extends  RecyclerView.Adapter<MainGoalAdapter.ViewH
             binding.tvGoal.setText(goal.getName());
             binding.progressBar.setMax(goal.getTotalReviews());
             binding.progressBar.setProgress(goal.getReviewed());
+            binding.tvdivision.setText((goal.getReviewed() + "/" + goal.getTotalReviews()));
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
