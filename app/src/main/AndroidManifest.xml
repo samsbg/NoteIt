@@ -20,19 +20,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NoteIt">
-        <activity android:name=".activities.TagActivity"></activity>
-        <activity android:name=".activities.CalendarActivity" />
-        <activity android:name=".activities.StatisticsActivity" />
-        <activity android:name=".activities.GoalEditorActivity" />
-        <activity android:name=".activities.NoteEditorActivity" />
-        <activity android:name=".activities.LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".activities.RedirectActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -44,6 +32,19 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.TagActivity" />
+        <activity android:name=".activities.CalendarActivity" />
+        <activity android:name=".activities.StatisticsActivity" />
+        <activity android:name=".activities.GoalEditorActivity" />
+        <activity android:name=".activities.NoteEditorActivity" />
+        <activity android:name=".activities.LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.MainActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
