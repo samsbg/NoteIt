@@ -44,7 +44,7 @@ public class MainGoalAdapter extends  RecyclerView.Adapter<MainGoalAdapter.ViewH
     }
 
     public interface OnClickListener {
-        void onItemClicked(int position, Goal goal, View v);
+        void onItemClicked(Goal goal);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -64,7 +64,7 @@ public class MainGoalAdapter extends  RecyclerView.Adapter<MainGoalAdapter.ViewH
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onClickListener.onItemClicked(getAdapterPosition(), goal, v);
+                    onClickListener.onItemClicked(goal);
                 }
             });
         }

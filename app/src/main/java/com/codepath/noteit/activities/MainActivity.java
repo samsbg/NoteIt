@@ -148,7 +148,7 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
         SearchNoteAdapter.OnClickListener onClickListenerSearchNote = new SearchNoteAdapter.OnClickListener() {
             @Override
-            public void onItemClicked(int position, Note note) {
+            public void onItemClicked(Note note) {
                 Intent i = new Intent(MainActivity.this, NoteEditorActivity.class);
                 i.putExtra("NOTE", note);
                 startActivity(i);
@@ -157,7 +157,7 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
         SearchTagAdapter.OnClickListener onClickListenerSearchTag = new SearchTagAdapter.OnClickListener() {
             @Override
-            public void onItemClicked(int position, Tag tag) {
+            public void onItemClicked(Tag tag) {
                 Intent i = new Intent(MainActivity.this, TagActivity.class);
                 i.putExtra("TAG", tag);
                 startActivity(i);
@@ -166,7 +166,7 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
         MainNoteAdapter.OnClickListener onClickListenerNote = new MainNoteAdapter.OnClickListener() {
             @Override
-            public void onItemClicked(int position, Note note, View v) {
+            public void onItemClicked(Note note) {
                 Intent i = new Intent(MainActivity.this, NoteEditorActivity.class);
                 i.putExtra("NOTE", note);
                 startActivity(i);
@@ -175,7 +175,7 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
         MainNoteAdapter.OnLongClickListener onLongClickListenerNote = new MainNoteAdapter.OnLongClickListener() {
             @Override
-            public void onItemClicked(int position, Note note, View v) {
+            public void onItemClicked(Note note, View v) {
                 PopupMenu popup = new PopupMenu(MainActivity.this, v);
                 popup.setOnMenuItemClickListener(MainActivity.this);
                 popup.inflate(R.menu.menu_note);
@@ -185,7 +185,7 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
         MainGoalAdapter.OnClickListener onClickListenerGoal = new MainGoalAdapter.OnClickListener() {
             @Override
-            public void onItemClicked(int position, Goal goal, View v) {
+            public void onItemClicked(Goal goal) {
                 if(goal.getNote() != null) {
                     Intent i = new Intent(MainActivity.this, NoteEditorActivity.class);
                     i.putExtra("GOAL", goal);

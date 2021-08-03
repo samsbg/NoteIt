@@ -16,11 +16,11 @@ import java.util.List;
 public class MainNoteAdapter extends RecyclerView.Adapter<MainNoteAdapter.ViewHolder>{
 
     public interface OnClickListener {
-        void onItemClicked(int position, Note note, View v);
+        void onItemClicked(Note note);
     }
 
     public interface OnLongClickListener {
-        void onItemClicked(int position, Note note, View v);
+        void onItemClicked(Note note, View v);
     }
 
     OnClickListener onClickListener;
@@ -68,14 +68,14 @@ public class MainNoteAdapter extends RecyclerView.Adapter<MainNoteAdapter.ViewHo
             binding.getRoot().setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    onLongClickListener.onItemClicked(getAdapterPosition(), note, v);
+                    onLongClickListener.onItemClicked(note, v);
                     return false;
                 }
             });
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onClickListener.onItemClicked(getAdapterPosition(), note, v);
+                    onClickListener.onItemClicked(note);
                 }
             });
         }

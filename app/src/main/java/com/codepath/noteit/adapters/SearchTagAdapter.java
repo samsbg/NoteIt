@@ -16,7 +16,7 @@ import java.util.List;
 public class SearchTagAdapter extends RecyclerView.Adapter<SearchTagAdapter.ViewHolder>{
 
     public interface OnClickListener {
-        void onItemClicked(int position, Tag tag);
+        void onItemClicked(Tag tag);
     }
 
     Context context;
@@ -61,7 +61,7 @@ public class SearchTagAdapter extends RecyclerView.Adapter<SearchTagAdapter.View
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    clickListener.onItemClicked(getLayoutPosition(), tag);
+                    clickListener.onItemClicked(tag);
                 }
             });
         }

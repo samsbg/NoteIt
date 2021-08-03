@@ -67,7 +67,7 @@ public class CalendarActivity extends AppCompatActivity {
 
         MainGoalAdapter.OnClickListener onClickListenerGoal = new MainGoalAdapter.OnClickListener() {
             @Override
-            public void onItemClicked(int position, Goal goal, View v) {
+            public void onItemClicked(Goal goal) {
                 if(goal.getNote() != null) {
                     Intent i = new Intent(CalendarActivity.this, NoteEditorActivity.class);
                     i.putExtra("GOAL", goal);

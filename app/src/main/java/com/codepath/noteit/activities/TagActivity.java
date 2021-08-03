@@ -53,7 +53,7 @@ public class TagActivity extends AppCompatActivity implements PopupMenu.OnMenuIt
 
         MainNoteAdapter.OnClickListener onClickListenerNote = new MainNoteAdapter.OnClickListener() {
             @Override
-            public void onItemClicked(int position, Note note, View v) {
+            public void onItemClicked(Note note) {
                 Intent i = new Intent(TagActivity.this, NoteEditorActivity.class);
                 i.putExtra("NOTE", note);
                 startActivity(i);
@@ -62,7 +62,7 @@ public class TagActivity extends AppCompatActivity implements PopupMenu.OnMenuIt
 
         MainNoteAdapter.OnLongClickListener onLongClickListenerNote = new MainNoteAdapter.OnLongClickListener() {
             @Override
-            public void onItemClicked(int position, Note note, View v) {
+            public void onItemClicked(Note note, View v) {
                 PopupMenu popup = new PopupMenu(TagActivity.this, v);
                 popup.setOnMenuItemClickListener(TagActivity.this);
                 popup.inflate(R.menu.menu_note);

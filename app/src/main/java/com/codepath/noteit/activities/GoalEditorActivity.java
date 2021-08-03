@@ -20,6 +20,7 @@ import com.codepath.noteit.GoogleCalendarClient;
 import com.codepath.noteit.NoteItApp;
 import com.codepath.noteit.adapters.ReminderAdapter;
 import com.codepath.noteit.adapters.SearchNoteAdapter;
+import com.codepath.noteit.adapters.SearchTagAdapter;
 import com.codepath.noteit.databinding.ActivityGoalEditorBinding;
 import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
@@ -63,6 +64,7 @@ public class GoalEditorActivity extends AppCompatActivity {
     private GoogleCalendarClient client;
 
     SearchNoteAdapter searchNoteAdapter;
+    SearchTagAdapter searchTagAdapter;
     ReminderAdapter reminderAdapter;
 
     Goal goal;
@@ -91,13 +93,37 @@ public class GoalEditorActivity extends AppCompatActivity {
             }
         };
 
-        SearchNoteAdapter.OnClickListener onClickListenerSearch = new SearchNoteAdapter.OnClickListener() {
+        SearchNoteAdapter.OnClickListener onClickListenerSearchNote = new SearchNoteAdapter.OnClickListener() {
             @Override
-            public void onItemClicked(int position, Note note) {
-                goal.setNote(notes.get(position));
-                binding.etSearch.setText(notes.get(position).getTitle());
+            public void onItemClicked(Note note) {
+                goal.setNote(note);
                 notes.clear();
+                binding.etSearch.setText(note.getTitle());
+                binding.tvNotesSepGoal.setVisibility(View.GONE);
                 searchNoteAdapter.notifyDataSetChanged();
+
+                goal.setTag(null);
+                tags.clear();
+                binding.tvTagsSepGoal.setVisibility(View.GONE);
+                searchTagAdapter.notifyDataSetChanged();
+            }
+        };
+
+        SearchTagAdapter.OnClickListener onClickListenerSearchTag = new SearchTagAdapter.OnClickListener() {
+            @Override
+            public void onItemClicked(Tag tag) {
+
+                goal.setTag(tag);
+                tags.clear();
+                binding.etSearch.setText(tag.getName());
+                binding.tvTagsSepGoal.setVisibility(View.GONE);
+                searchTagAdapter.notifyDataSetChanged();
+
+                goal.setNote(null);
+                notes.clear();
+                binding.tvNotesSepGoal.setVisibility(View.GONE);
+                searchNoteAdapter.notifyDataSetChanged();
+
             }
         };
 
@@ -111,12 +137,13 @@ public class GoalEditorActivity extends AppCompatActivity {
         binding.rvReminders.setLayoutManager(new LinearLayoutManager(this));
         binding.rvReminders.setAdapter(reminderAdapter);
 
-        searchNoteAdapter = new SearchNoteAdapter(this, notes, onClickListenerSearch);
-        binding.rvSearch.setLayoutManager(new LinearLayoutManager(this));
-        binding.rvSearch.setAdapter(searchNoteAdapter);
+        searchNoteAdapter = new SearchNoteAdapter(this, notes, onClickListenerSearchNote);
+        binding.rvSearchNotes.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvSearchNotes.setAdapter(searchNoteAdapter);
 
-        queryNotes();
-        queryTags();
+        searchTagAdapter = new SearchTagAdapter(this, tags, onClickListenerSearchTag);
+        binding.rvSearchTags.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvSearchTags.setAdapter(searchTagAdapter);
 
         binding.tvDatePicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,13 +203,29 @@ public class GoalEditorActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                binding.rvSearch.setVisibility(View.VISIBLE);
-                notes.clear();
                 String text = s.toString().toLowerCase();
-                if(!text.equals("")) {
-                    notes.addAll(mapNotes.get(text));
+
+                binding.tvNotesSepGoal.setVisibility(View.VISIBLE);
+                binding.rvSearchNotes.setVisibility(View.VISIBLE);
+                notes.clear();
+                if(!text.equals("") && MainActivity.substringsNotes.containsKey(text)) {
+                    notes.addAll(MainActivity.substringsNotes.get(text));
                 }
                 searchNoteAdapter.notifyDataSetChanged();
+                if(notes.isEmpty()) {
+                    binding.tvNotesSepGoal.setVisibility(View.GONE);
+                }
+
+                binding.tvTagsSepGoal.setVisibility(View.VISIBLE);
+                binding.rvSearchTags.setVisibility(View.VISIBLE);
+                tags.clear();
+                if(!text.equals("") && MainActivity.substringsTag.containsKey(text)) {
+                    tags.addAll(MainActivity.substringsTag.get(text));
+                }
+                searchTagAdapter.notifyDataSetChanged();
+                if(tags.isEmpty()) {
+                    binding.tvTagsSepGoal.setVisibility(View.GONE);
+                }
             }
         });
     }
@@ -203,6 +246,10 @@ public class GoalEditorActivity extends AppCompatActivity {
         }
         if (date == null) {
             Toast.makeText(GoalEditorActivity.this, "Date due must be filled", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (goal.getNote() == null && goal.getTag() == null) {
+            Toast.makeText(GoalEditorActivity.this, "Name or tag must be filled", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -325,78 +372,5 @@ public class GoalEditorActivity extends AppCompatActivity {
         }
     }
 
-    private void queryNotes() {
-        ParseQuery<Note> query = ParseQuery.getQuery(Note.class);
-        query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
-        query.findInBackground(new FindCallback<Note>() {
-            @Override
-            public void done(List<Note> notesList, com.parse.ParseException e) {
-                if (e != null) {
-                    Log.e("MainActivity", "Issue with getting notes", e);
-                    return;
-                }
-                notes.addAll(notesList);
-
-                for (Note note : notesList) {
-                    addNoteToMap(note);
-                }
-
-                //From map to JSONobject
-                JSONObject objMap = new JSONObject();
-                JSONArray arr2;
-
-                for (String key : mapNotes.keySet()) {
-                    arr2 = new JSONArray();
-
-                    for (Note noteIt : mapNotes.get(key)) {
-                        arr2.put(noteIt);
-                    }
-
-                    try {
-                        objMap.put(key, arr2);
-                    } catch (JSONException jsonException) {
-                        jsonException.printStackTrace();
-                    }
-                }
-
-            }
-        });
-
-    }
-
-    private void queryTags() {
-        ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
-        query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
-        query.findInBackground(new FindCallback<Tag>() {
-            @Override
-            public void done(List<Tag> tagsList, com.parse.ParseException e) {
-                if (e != null) {
-                    Log.e("MainActivity", "Issue with getting tags", e);
-                    return;
-                }
-                tags.addAll(tagsList);
-            }
-        });
-    }
-
-    public void addNoteToMap(Note n) {
-        int stringLength = n.getTitle().length();
-        String substring;
-
-        for (int i = 0; i < stringLength; i++) {
-            for (int j = i + 1; j <= stringLength; j++) {
-                substring = n.getTitle().substring(i,j).toLowerCase();
-                if(mapNotes.containsKey(substring)) {
-                    if (!mapNotes.get(substring).contains(n)) {
-                        mapNotes.get(substring).add(n);
-                    }
-                } else {
-                    mapNotes.put(substring, new ArrayList<>());
-                    mapNotes.get(substring).add(n);
-                }
-            }
-
-        }
-    }
 
 }

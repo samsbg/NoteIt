@@ -16,7 +16,7 @@ import java.util.List;
 public class SearchNoteAdapter extends RecyclerView.Adapter<SearchNoteAdapter.ViewHolder>{
 
     public interface OnClickListener {
-        void onItemClicked(int position, Note note);
+        void onItemClicked(Note note);
     }
 
     Context context;
@@ -61,7 +61,7 @@ public class SearchNoteAdapter extends RecyclerView.Adapter<SearchNoteAdapter.Vi
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    clickListener.onItemClicked(getLayoutPosition(), note);
+                    clickListener.onItemClicked(note);
                 }
             });
         }
