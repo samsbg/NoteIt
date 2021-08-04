@@ -22,6 +22,7 @@ import com.codepath.noteit.adapters.MainGoalAdapter;
 import com.codepath.noteit.adapters.MainNoteAdapter;
 import com.codepath.noteit.adapters.SearchNoteAdapter;
 import com.codepath.noteit.adapters.SearchTagAdapter;
+import com.codepath.noteit.adapters.TagAdapter;
 import com.codepath.noteit.databinding.ActivityMainBinding;
 import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
@@ -52,6 +53,7 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
     ActivityMainBinding binding;
 
+    TagAdapter tagAdapter;
     MainNoteAdapter noteAdapter;
     MainGoalAdapter goalAdapter;
     SearchNoteAdapter searchNoteAdapter;
@@ -59,6 +61,7 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
     List<Note> notes;
     List<Goal> goals;
+    List<Tag> tags;
     List<Note> notesSearch;
     List<Tag> tagsSearch;
 
@@ -146,6 +149,13 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
         View view = binding.getRoot();
         setContentView(view);
 
+        TagAdapter.OnClickListener onClickListenerTag = new TagAdapter.OnClickListener() {
+            @Override
+            public void onItemClicked(Tag tag) {
+                //intent
+            }
+        };
+
         SearchNoteAdapter.OnClickListener onClickListenerSearchNote = new SearchNoteAdapter.OnClickListener() {
             @Override
             public void onItemClicked(Note note) {
@@ -211,9 +221,15 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
         binding.rvGoals.setAdapter(goalAdapter);
         queryGoals();
 
+        tags = new ArrayList<>();
+        tagAdapter = new TagAdapter(this, tags, onClickListenerTag);
+        binding.rvTags.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvTags.setAdapter(tagAdapter);
+        queryTags();
+
         notesSearch = new ArrayList<>();
         searchNoteAdapter = new SearchNoteAdapter(this, notesSearch, onClickListenerSearchNote);
-        binding.rvSearchMainNote.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvSearchMainNote.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         binding.rvSearchMainNote.setAdapter(searchNoteAdapter);
 
         tagsSearch = new ArrayList<>();
@@ -324,6 +340,22 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                 goals.addAll(goalsList);
                 Log.d("MainActivity", "Size of list goal " + goals.size());
                 goalAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void queryTags() {
+        ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
+        query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<Tag>() {
+            @Override
+            public void done(List<Tag> tagsList, com.parse.ParseException e) {
+                if (e != null) {
+                    Log.e("MainActivity", "Issue with getting tags", e);
+                    return;
+                }
+                tags.addAll(tagsList);
+                tagAdapter.notifyDataSetChanged();
             }
         });
     }
