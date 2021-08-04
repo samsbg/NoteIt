@@ -23,6 +23,7 @@ public class Goal extends ParseObject implements Parcelable {
     private static final String KEY_TAG = "tag";
     private static final String KEY_CREATED_BY = "createdBy";
     private static final String KEY_COMPLETED_BY = "completedBy";
+    private static final String KEY_COLOR = "color";
 
     public String getName() {
         try {
@@ -91,5 +92,13 @@ public class Goal extends ParseObject implements Parcelable {
 
     public void setCompletedBy(Date date) {
         put(KEY_COMPLETED_BY, date);
+    }
+
+    public String getColor() {
+        return getString(KEY_COLOR);
+    }
+
+    public void setColor(String color) {
+        put(KEY_COLOR, color);
     }
 }

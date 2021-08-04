@@ -17,6 +17,8 @@ public class Note extends ParseObject implements Parcelable {
     private static final String KEY_CONTENT = "content";
     private static final String KEY_IMAGES = "images";
     private static final String KEY_CREATED_BY = "createdBy";
+    private static final String KEY_COLOR = "color";
+    private static final String KEY_TAGS = "tags";
 
     public String getTitle() {
         try {
@@ -53,6 +55,22 @@ public class Note extends ParseObject implements Parcelable {
 
     public ParseUser getCreatedBy() {
         return getParseUser(KEY_CREATED_BY);
+    }
+
+    public String getColor() {
+        return getString(KEY_COLOR);
+    }
+
+    public void setColor(String color) {
+        put(KEY_COLOR, color);
+    }
+
+    public JSONArray getTags() {
+        return getJSONArray(KEY_TAGS);
+    }
+
+    public void setTags(JSONArray tags) {
+        put(KEY_TAGS, tags);
     }
 
 }

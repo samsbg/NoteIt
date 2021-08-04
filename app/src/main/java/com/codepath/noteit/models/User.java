@@ -13,9 +13,9 @@ public class User extends ParseUser{
 
     private static final String KEY_ID = "objectId";
     private static final String KEY_USERNAME = "username";
-    private static final String KEY_COMPLETED = "completed";
-    private static final String KEY_REVIEWED = "reviewed";
     private static final String KEY_CALENDAR_ID = "calendarId";
+    private static final String KEY_TAGS_REVIEWED = "tagsReviewed";
+    private static final String KEY_NOTES_REVIEWED = "notesReviewed";
 
     public String getId() {
         return getString(KEY_ID);
@@ -34,27 +34,27 @@ public class User extends ParseUser{
         put(KEY_USERNAME, username);
     }
 
-    public int getCompleted() {
-        return getInt(KEY_COMPLETED);
-    }
-
-    public void setCompleted(int completed) {
-        put(KEY_COMPLETED, completed);
-    }
-
-    public int getReviewed() {
-        return getInt(KEY_REVIEWED);
-    }
-
-    public void setReviewed(int reviewed) {
-        put(KEY_REVIEWED, reviewed);
-    }
-
     public String getCalendarId() {
         return getString(KEY_CALENDAR_ID);
     }
 
     public void setCalendarId(String calendar) {
         put(KEY_CALENDAR_ID, calendar);
+    }
+
+    public int getTagsReviewed() {
+        return getInt(KEY_TAGS_REVIEWED);
+    }
+
+    public void setTagsReviewed(int tagsReviewed) {
+        put(KEY_TAGS_REVIEWED, tagsReviewed);
+    }
+
+    public int getNotesReviewed() {
+        return getInt(KEY_NOTES_REVIEWED);
+    }
+
+    public void setNotesReviewed(int notesReviewed) {
+        put(KEY_NOTES_REVIEWED, notesReviewed);
     }
 }

@@ -115,10 +115,9 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                     if (goal.getReviewed() < goal.getTotalReviews()) {
                         goal.setReviewed(goal.getReviewed() + 1);
                         User user = (User) ParseUser.getCurrentUser();
-                        user.setReviewed(user.getReviewed() + 1);
+                        user.setNotesReviewed(user.getNotesReviewed() + 1);
                         if (goal.getReviewed() == goal.getTotalReviews()) {
                             goal.setCompletedBy(Calendar.getInstance().getTime());
-                            user.setCompleted(user.getCompleted() + 1);
                         }
                         user.saveInBackground(new SaveCallback() {
                             @Override

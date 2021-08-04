@@ -25,8 +25,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
         user = (User) ParseUser.getCurrentUser();
 
-        binding.tvResult1.setText(Integer.toString(user.getCompleted()));
-        binding.tvResult2.setText(Integer.toString(user.getReviewed()));
+        //binding.tvResult1.setText(Integer.toString(user.getCompleted()));
+        //binding.tvResult2.setText(Integer.toString(user.getReviewed()));
         binding.tvResult3.setText("Undetermined");
     }
 }

@@ -15,6 +15,7 @@ public class Tag extends ParseObject implements Parcelable {
     private static final String KEY_NAME = "name";
     private static final String KEY_CREATED_BY = "createdBy";
     private static final String KEY_NOTES = "notes";
+    private static final String KEY_COLOR = "color";
 
     public String getName() {
         try {
@@ -43,5 +44,13 @@ public class Tag extends ParseObject implements Parcelable {
 
     public void setNotes(JSONArray notes) {
         put(KEY_NOTES, notes);
+    }
+
+    public String getColor() {
+        return getString(KEY_COLOR);
+    }
+
+    public void setColor(String color) {
+        put(KEY_COLOR, color);
     }
 }
