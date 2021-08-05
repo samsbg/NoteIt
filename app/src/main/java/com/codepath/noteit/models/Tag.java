@@ -22,8 +22,8 @@ public class Tag extends ParseObject implements Parcelable {
             return fetchIfNeeded().getString(KEY_NAME);
         } catch (ParseException e) {
             e.printStackTrace();
+            return"";
         }
-        return"";
     }
 
     public void setName(String name) {
@@ -46,11 +46,11 @@ public class Tag extends ParseObject implements Parcelable {
         put(KEY_NOTES, notes);
     }
 
-    public String getColor() {
-        return getString(KEY_COLOR);
+    public int getColor() {
+        return getInt(KEY_COLOR);
     }
 
-    public void setColor(String color) {
+    public void setColor(int color) {
         put(KEY_COLOR, color);
     }
 }
