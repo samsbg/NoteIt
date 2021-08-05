@@ -1,10 +1,14 @@
 package com.codepath.noteit.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -18,6 +22,8 @@ import android.widget.Toast;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.codepath.noteit.GoogleCalendarClient;
 import com.codepath.noteit.NoteItApp;
+import com.codepath.noteit.R;
+import com.codepath.noteit.adapters.ColorAdapter;
 import com.codepath.noteit.adapters.ReminderAdapter;
 import com.codepath.noteit.adapters.SearchNoteAdapter;
 import com.codepath.noteit.adapters.SearchTagAdapter;
@@ -66,6 +72,7 @@ public class GoalEditorActivity extends AppCompatActivity {
     SearchNoteAdapter searchNoteAdapter;
     SearchTagAdapter searchTagAdapter;
     ReminderAdapter reminderAdapter;
+    ColorAdapter colorAdapter;
 
     Goal goal;
     Date date;
@@ -84,7 +91,15 @@ public class GoalEditorActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
+        int[] colors = {getColor(R.color.color_1_green),
+                getColor(R.color.color_2_fuchsia),
+                getColor(R.color.color_3_blue),
+                getColor(R.color.color_4_yellow),
+                getColor(R.color.color_5_orange),
+                getColor(R.color.color_6_pink)};
+
         goal = new Goal();
+        goal.setColor(colors[0]);
 
         ReminderAdapter.OnClickListener onClickListenerReminder = new ReminderAdapter.OnClickListener() {
             @Override
@@ -126,6 +141,15 @@ public class GoalEditorActivity extends AppCompatActivity {
             }
         };
 
+        ColorAdapter.OnClickListener onClickListenerColor = new ColorAdapter.OnClickListener() {
+            @Override
+            public void onItemClicked(int color) {
+                goal.setColor(color);
+                ImageViewCompat.setImageTintList(binding.colorCircle, ColorStateList.valueOf(color));
+                binding.rvColors.setVisibility(View.GONE);
+            }
+        };
+
         reminders = new ArrayList<>();
         notes = new ArrayList<>();
         tags = new ArrayList<>();
@@ -143,6 +167,10 @@ public class GoalEditorActivity extends AppCompatActivity {
         searchTagAdapter = new SearchTagAdapter(this, tags, onClickListenerSearchTag);
         binding.rvSearchTags.setLayoutManager(new LinearLayoutManager(this));
         binding.rvSearchTags.setAdapter(searchTagAdapter);
+
+        colorAdapter = new ColorAdapter(this, colors, onClickListenerColor);
+        binding.rvColors.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvColors.setAdapter(colorAdapter);
 
         binding.tvDatePicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,6 +205,13 @@ public class GoalEditorActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 save(v);
+            }
+        });
+
+        binding.ddbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.rvColors.setVisibility(View.VISIBLE);
             }
         });
 

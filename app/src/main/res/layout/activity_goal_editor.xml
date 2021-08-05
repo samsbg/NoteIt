@@ -204,4 +204,35 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
+    <ImageView
+        android:id="@+id/ddbutton"
+        android:layout_width="50dp"
+        android:layout_height="35dp"
+        android:layout_below="@+id/etSearch"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="15dp"
+        android:layout_toEndOf="@+id/tvDatePicker"
+        app:srcCompat="@android:drawable/btn_dropdown" />
+
+    <ImageView
+        android:id="@+id/colorCircle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/ddbutton"
+        android:layout_alignTop="@+id/ddbutton"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="6dp"
+        app:srcCompat="@drawable/circle_shape"
+        app:tint="@color/color_4_yellow" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvColors"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ddbutton"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="-5dp"
+        android:layout_toEndOf="@+id/tvDatePicker"
+        android:visibility="gone" />
+
 </RelativeLayout>
