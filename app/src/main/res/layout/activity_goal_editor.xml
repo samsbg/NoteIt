@@ -223,7 +223,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="6dp"
         app:srcCompat="@drawable/circle_shape"
-        app:tint="@color/color_4_yellow" />
+        app:tint="@color/color_1_green" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvColors"

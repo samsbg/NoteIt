@@ -21,9 +21,9 @@
         android:id="@+id/ibSave"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="15dp"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="10dp"
-        android:layout_toEndOf="@+id/ibDelete"
+        android:layout_marginEnd="15dp"
         android:background="@drawable/save_icon"
         android:backgroundTint="#000000" />
 
@@ -71,6 +71,37 @@
         android:minLines="25"
         android:textSize="18sp" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvColors"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btndropdown2"
+        android:layout_alignStart="@+id/btndropdown2"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="-5dp"
+        android:layout_marginBottom="110dp"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/btndropdown2"
+        android:layout_width="50dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@+id/ibSave"
+        app:srcCompat="@android:drawable/btn_dropdown" />
+
+    <ImageView
+        android:id="@+id/colorCircle3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/btndropdown2"
+        android:layout_alignTop="@+id/btndropdown2"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="7dp"
+        app:srcCompat="@drawable/circle_shape"
+        app:tint="@color/color_1_green" />
+
     <ImageButton
         android:id="@+id/ibAdd"
         android:layout_width="60dp"
@@ -85,28 +116,6 @@
         android:backgroundTint="#000000"
         android:clickable="true" />
 
-    <ImageButton
-        android:id="@+id/ibAddTag"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="-234dp"
-        android:layout_toEndOf="@+id/etTag"
-        android:background="@drawable/add_icon" />
-
-    <EditText
-        android:id="@+id/etTag"
-        android:layout_width="110dp"
-        android:layout_height="40dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="6dp"
-        android:layout_toEndOf="@+id/ibSave"
-        android:hint="Add Tag"
-        android:textSize="16sp" />
-
     <Button
         android:id="@+id/btnReview"
         android:layout_width="wrap_content"
@@ -117,5 +126,104 @@
         android:layout_marginEnd="7dp"
         android:text="REVIEW"
         android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/tagLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        tools:context=".fragments.TagFragment">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="251dp"
+            android:layout_marginEnd="0dp"
+            android:background="@drawable/rounded_edittext"
+            android:src="@drawable/rounded_edittext"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/imageView3"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="16dp"
+            android:text="Add tag"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/etTagName"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/imageView3"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="67dp"
+            android:background="@drawable/rounded_edittext"
+            android:backgroundTint="@color/black"
+            android:hint="Add name"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:textColor="@color/white"
+            android:textColorHint="#C8C8C8"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/btndropdown"
+            android:layout_width="50dp"
+            android:layout_height="35dp"
+            android:layout_below="@+id/etTagName"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="242dp"
+            android:layout_marginTop="-36dp"
+            app:srcCompat="@android:drawable/btn_dropdown" />
+
+        <ImageView
+            android:id="@+id/colorCircle2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/btndropdown"
+            android:layout_alignTop="@+id/btndropdown"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="6dp"
+            app:srcCompat="@drawable/circle_shape"
+            app:tint="@color/color_1_green" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvColors2"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btndropdown"
+            android:layout_alignStart="@+id/btndropdown"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="-5dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnSaveTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btndropdown"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="47dp"
+            android:backgroundTint="#000000"
+            android:text="SAVE"
+            android:textColor="@color/white" />
+
+    </RelativeLayout>
+
 
 </RelativeLayout>

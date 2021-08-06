@@ -7,4 +7,7 @@
     <item
         android:id="@+id/iChooseImage"
         android:title="Choose image" />
+    <item
+        android:id="@+id/iAddTag"
+        android:title="Add tag" />
 </menu>

@@ -2,9 +2,12 @@ package com.codepath.noteit.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -19,6 +22,7 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.codepath.noteit.R;
+import com.codepath.noteit.adapters.ColorAdapter;
 import com.codepath.noteit.adapters.NoteImagesAdapter;
 import com.codepath.noteit.databinding.ActivityNoteEditorBinding;
 import com.codepath.noteit.models.Goal;
@@ -58,7 +62,10 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
 
     ActivityNoteEditorBinding binding;
     NoteImagesAdapter adapter;
+    ColorAdapter colorAdapterNote;
+    ColorAdapter colorAdapterTag;
     List<Bitmap> images;
+    int[] colors;
     Map<String, List<Note>> map;
     File photoFile;
     Note note;
@@ -71,11 +78,39 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
         super.onCreate(savedInstanceState);
         binding = ActivityNoteEditorBinding.inflate(getLayoutInflater());
 
+        int[] colors = {getColor(R.color.color_1_green),
+                getColor(R.color.color_2_fuchsia),
+                getColor(R.color.color_3_blue),
+                getColor(R.color.color_4_yellow),
+                getColor(R.color.color_5_orange),
+                getColor(R.color.color_6_pink)};
+
         View view = binding.getRoot();
         setContentView(view);
 
         note = new Note();
         images = new ArrayList<>();
+        map = new HashMap<>();
+
+        note.setColor(colors[0]);
+
+        ColorAdapter.OnClickListener onClickListenerColorNote = new ColorAdapter.OnClickListener() {
+            @Override
+            public void onItemClicked(int color) {
+                note.setColor(color);
+                ImageViewCompat.setImageTintList(binding.colorCircle3, ColorStateList.valueOf(color));
+                binding.rvColors.setVisibility(View.GONE);
+            }
+        };
+
+        ColorAdapter.OnClickListener onClickListenerColorTag = new ColorAdapter.OnClickListener() {
+            @Override
+            public void onItemClicked(int color) {
+                note.setColor(color);
+                ImageViewCompat.setImageTintList(binding.colorCircle2, ColorStateList.valueOf(color));
+                binding.rvColors2.setVisibility(View.GONE);
+            }
+        };
 
         if (getIntent().getParcelableExtra("NOTE") != null) {
             note = (Note) getIntent().getParcelableExtra("NOTE");
@@ -143,10 +178,16 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
         }
 
         adapter = new NoteImagesAdapter(this, images);
-        map = new HashMap<>();
-
         binding.rvImages.setLayoutManager(new GridLayoutManager(this, 3));
         binding.rvImages.setAdapter(adapter);
+
+        colorAdapterNote = new ColorAdapter(this, colors, onClickListenerColorNote);
+        binding.rvColors.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvColors.setAdapter(colorAdapterNote);
+
+        colorAdapterTag = new ColorAdapter(this, colors, onClickListenerColorTag);
+        binding.rvColors2.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvColors2.setAdapter(colorAdapterTag);
 
         binding.ibSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,14 +214,26 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
             }
         });
 
-        binding.ibAddTag.setOnClickListener(new View.OnClickListener() {
+        binding.btndropdown2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.rvColors.setVisibility(View.VISIBLE);
+            }
+        });
+
+        binding.btndropdown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.rvColors2.setVisibility(View.VISIBLE);
+            }
+        });
+
+        binding.btnSaveTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addTag();
             }
         });
-
-
     }
 
     private void saveNote() {
@@ -240,14 +293,13 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
     }
 
     private void addTag() {
-        String tagString = binding.etTag.getText().toString();
+        String tagString = binding.etTagName.getText().toString();
 
         if (tagString.equals("")) {
             Toast.makeText(NoteEditorActivity.this, "Needs tag name", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        tagSave = new Tag();
         tagSave.setName(tagString);
         tagSave.setCreatedBy(ParseUser.getCurrentUser());
 
@@ -287,8 +339,9 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                             return;
                         }
                         Log.d("NoteEditor", "Tag was saved");
-                        binding.etTag.setText("");
+                        binding.etTagName.setText("");
                         saveNote();
+                        binding.tagLayout.setVisibility(View.GONE);
                     }
                 });
             }
@@ -310,6 +363,10 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
             case R.id.iTakePhoto:
                 launchCamera();
                 return true;
+            case R.id.iAddTag:
+                binding.tagLayout.setVisibility(View.VISIBLE);
+                tagSave = new Tag();
+                tagSave.setColor(R.color.color_1_green);
             default:
                 return false;
         }
