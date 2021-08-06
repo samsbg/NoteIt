@@ -193,33 +193,39 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
         JSONArray tagsTopArr = note.getTags();
         List<String> tagsId = new ArrayList<>();
 
-        for (int i=0;i<tagsTopArr.length();i++) {
-            try {
-                JSONObject jObj = tagsTopArr.getJSONObject(i);
-                tagsId.add(jObj.getString("objectId"));
+        if (tagsTopArr != null) {
+            binding.tvTags2.setVisibility(View.VISIBLE);
+            for (int i=0;i<tagsTopArr.length();i++) {
+                try {
+                    JSONObject jObj = tagsTopArr.getJSONObject(i);
+                    tagsId.add(jObj.getString("objectId"));
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
-        query.whereContainedIn("objectId", tagsId);
-        query.findInBackground(new FindCallback<Tag>() {
-            @Override
-            public void done(List<Tag> notesList, com.parse.ParseException e) {
-                if (e != null) {
-                    Log.e("TagActivity", "Issue with getting notes", e);
-                    return;
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                tagsTop.addAll(notesList);
-
-                tagAdapter = new TagAdapter(NoteEditorActivity.this, tagsTop, onClickListenerTag);
-                binding.rvTags.setLayoutManager(new LinearLayoutManager(NoteEditorActivity.this, LinearLayoutManager.HORIZONTAL, false));
-                binding.rvTags.setAdapter(tagAdapter);
             }
-        });
 
+            ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
+            query.whereContainedIn("objectId", tagsId);
+            query.findInBackground(new FindCallback<Tag>() {
+                @Override
+                public void done(List<Tag> notesList, com.parse.ParseException e) {
+                    if (e != null) {
+                        Log.e("TagActivity", "Issue with getting notes", e);
+                        return;
+                    }
+                    tagsTop.addAll(notesList);
+
+                    tagAdapter = new TagAdapter(NoteEditorActivity.this, tagsTop, onClickListenerTag);
+                    binding.rvTags.setLayoutManager(new LinearLayoutManager(NoteEditorActivity.this, LinearLayoutManager.HORIZONTAL, false));
+                    binding.rvTags.setAdapter(tagAdapter);
+                }
+            });
+        } else {
+            tagAdapter = new TagAdapter(NoteEditorActivity.this, tagsTop, onClickListenerTag);
+            binding.rvTags.setLayoutManager(new LinearLayoutManager(NoteEditorActivity.this, LinearLayoutManager.HORIZONTAL, false));
+            binding.rvTags.setAdapter(tagAdapter);
+        }
 
         adapter = new NoteImagesAdapter(this, images);
         binding.rvImages.setLayoutManager(new GridLayoutManager(this, 3));
@@ -337,6 +343,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
 
     private void addTag() {
         String tagString = binding.etTagName.getText().toString();
+        saveNote();
 
         if (tagString.equals("")) {
             Toast.makeText(NoteEditorActivity.this, "Needs tag name", Toast.LENGTH_SHORT).show();
@@ -345,6 +352,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
 
         tagSave.setName(tagString);
         tagSave.setCreatedBy(ParseUser.getCurrentUser());
+        tagSave.remove("notes");
 
         ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
         query.whereEqualTo("name", tagString);
@@ -366,6 +374,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                 JSONArray notes = tagSave.getNotes();
 
                 if(notes == null) {
+                    binding.tvTags2.setVisibility(View.VISIBLE);
                     notes = new JSONArray();
                 }
 

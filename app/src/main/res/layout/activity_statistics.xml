@@ -7,24 +7,16 @@
     tools:context=".StatisticsActivity">
 
 
-    <ImageView
-        android:id="@+id/ivLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="56dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
     <TextView
         android:id="@+id/tvSectionName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ivLogo"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="50dp"
         android:text="Statistics"
-        android:textSize="36sp" />
+        android:textColor="#000000"
+        android:textSize="48sp" />
 
     <TextView
         android:id="@+id/tvGoal1"
@@ -34,8 +26,22 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="30dp"
-        android:text="Days without losing a goal"
-        android:textSize="18sp"
+        android:text="Goals"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvGoal5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvGoal4"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        android:text="Reviews"
+        android:textColor="@color/black"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <TextView
@@ -44,61 +50,206 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvGoal1"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
-        android:text="Goals completed"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
+        android:text="Completed"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvGoal6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvGoal5"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
+        android:text="Pending"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvGoal7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvGoal6"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
+        android:text="Reviewed"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvGoal8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvGoal7"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="20dp"
+        android:text="Notes"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvGoal9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvGoal8"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="20dp"
+        android:text="Tags"
+        android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvGoal3"
-        android:layout_width="233dp"
-        android:layout_height="52dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/tvGoal2"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
-        android:text="Tag with most completed goals"
-        android:textSize="18sp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
+        android:text="Incomplete"
+        android:textColor="@color/black"
+        android:textSize="22sp"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/tvResult1"
+        android:id="@+id/tvGoal4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvGoal3"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
+        android:text="Overdue"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvGoalsTot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvSectionName"
         android:layout_alignParentStart="false"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="30dp"
-        android:layout_marginEnd="20dp"
-        android:textSize="18sp"
+        android:layout_marginEnd="60dp"
+        android:textSize="30sp"
         android:textStyle="normal"
         tools:text="20" />
 
     <TextView
-        android:id="@+id/tvResult2"
+        android:id="@+id/tvReviewsTot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvOverdue"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="60dp"
+        android:textSize="30sp"
+        android:textStyle="normal"
+        tools:text="20" />
+
+    <TextView
+        android:id="@+id/tvCompleted"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvGoal1"
         android:layout_alignParentStart="false"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="60dp"
+        android:textSize="22sp"
+        android:textStyle="normal"
+        tools:text="8" />
+
+    <TextView
+        android:id="@+id/tvIncompleted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvCompleted"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="60dp"
+        android:textSize="22sp"
+        android:textStyle="normal"
+        tools:text="8" />
+
+    <TextView
+        android:id="@+id/tvOverdue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvIncompleted"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="60dp"
+        android:textSize="22sp"
+        android:textStyle="normal"
+        tools:text="8" />
+
+    <TextView
+        android:id="@+id/tvPending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvReviewsTot"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="60dp"
+        android:textSize="22sp"
+        android:textStyle="normal"
+        tools:text="8" />
+
+    <TextView
+        android:id="@+id/tvReviewed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPending"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="60dp"
+        android:textSize="22sp"
+        android:textStyle="normal"
+        tools:text="8" />
+
+    <TextView
+        android:id="@+id/tvNotesReviewed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvReviewed"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="60dp"
         android:textSize="18sp"
         android:textStyle="normal"
         tools:text="8" />
 
     <TextView
-        android:id="@+id/tvResult3"
+        android:id="@+id/tvTagsReviewed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvGoal2"
+        android:layout_below="@+id/tvNotesReviewed"
         android:layout_alignParentStart="false"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="60dp"
         android:textSize="18sp"
         android:textStyle="normal"
-        tools:text="Science" />
+        tools:text="8" />
 
 </RelativeLayout>

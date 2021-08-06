@@ -4,7 +4,8 @@
     android:id="@+id/rlDayLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/rectangle">
+    android:background="@drawable/rounded_edittext"
+    android:backgroundTint="@color/white">
 
     <TextView
         android:id="@+id/tvCalendarDay"

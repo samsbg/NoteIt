@@ -4,17 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/right_background"
     tools:context=".activities.CalendarActivity">
 
     <com.kizitonwose.calendarview.CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
         app:cv_dayViewResource="@layout/calendar_day_layout"
-        app:cv_monthHeaderResource="@layout/calendar_header"
-        app:cv_orientation="horizontal"
         app:cv_hasBoundaries="true"
-        app:cv_inDateStyle="none"/>
+        app:cv_inDateStyle="none"
+        app:cv_monthHeaderResource="@layout/calendar_header"
+        app:cv_orientation="horizontal" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMainGoals"
@@ -35,6 +38,7 @@
         android:paddingTop="10dp"
         android:paddingEnd="0dp"
         android:paddingBottom="10dp"
+        android:textColor="@color/black"
         android:textSize="22sp"
         tools:text="Monday 26 2020" />
 
