@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.codepath.noteit.R;
 import com.codepath.noteit.adapters.ColorAdapter;
 import com.codepath.noteit.adapters.NoteImagesAdapter;
+import com.codepath.noteit.adapters.TagAdapter;
 import com.codepath.noteit.databinding.ActivityNoteEditorBinding;
 import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
@@ -64,9 +65,10 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
     NoteImagesAdapter adapter;
     ColorAdapter colorAdapterNote;
     ColorAdapter colorAdapterTag;
+    TagAdapter tagAdapter;
+
     List<Bitmap> images;
-    int[] colors;
-    Map<String, List<Note>> map;
+    List<Tag> tagsTop;
     File photoFile;
     Note note;
     Tag tagSave;
@@ -90,7 +92,6 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
 
         note = new Note();
         images = new ArrayList<>();
-        map = new HashMap<>();
 
         note.setColor(colors[0]);
 
@@ -106,7 +107,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
         ColorAdapter.OnClickListener onClickListenerColorTag = new ColorAdapter.OnClickListener() {
             @Override
             public void onItemClicked(int color) {
-                note.setColor(color);
+                tagSave.setColor(color);
                 ImageViewCompat.setImageTintList(binding.colorCircle2, ColorStateList.valueOf(color));
                 binding.rvColors2.setVisibility(View.GONE);
             }
@@ -193,6 +194,8 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
             @Override
             public void onClick(View v) {
                 saveNote();
+                finish();
+                returnMain();
             }
         });
 
@@ -264,11 +267,8 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                     return;
                 }
                 Toast.makeText(NoteEditorActivity.this, "Note saved!", Toast.LENGTH_SHORT).show();
-                finish();
-                returnMain();
             }
         });
-
         addNoteToMap();
     }
 
@@ -279,13 +279,13 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
         for (int i = 0; i < stringLength; i++) {
             for (int j = i + 1; j <= stringLength; j++) {
                 substr = note.getTitle().substring(i,j).toLowerCase();
-                if(map.containsKey(substr)) {
-                    if (!map.get(substr).contains(note)) {
-                        map.get(substr).add(note);
+                if(MainActivity.substringsNotes.containsKey(substr)) {
+                    if (!MainActivity.substringsNotes.get(substr).contains(note)) {
+                        MainActivity.substringsNotes.get(substr).add(note);
                     }
                 } else {
-                    map.put(substr, new ArrayList<>());
-                    map.get(substr).add(note);
+                    MainActivity.substringsNotes.put(substr, new ArrayList<>());
+                    MainActivity.substringsNotes.get(substr).add(note);
                 }
             }
 
@@ -340,8 +340,18 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                         }
                         Log.d("NoteEditor", "Tag was saved");
                         binding.etTagName.setText("");
-                        saveNote();
                         binding.tagLayout.setVisibility(View.GONE);
+
+                        JSONArray tags = note.getTags();
+
+                        if(tags == null) {
+                            tags = new JSONArray();
+                        }
+
+                        tags.put(tagSave);
+                        note.setTags(tags);
+
+                        saveNote();
                     }
                 });
             }
@@ -366,7 +376,7 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
             case R.id.iAddTag:
                 binding.tagLayout.setVisibility(View.VISIBLE);
                 tagSave = new Tag();
-                tagSave.setColor(R.color.color_1_green);
+                tagSave.setColor(getColor(R.color.color_1_green));
             default:
                 return false;
         }

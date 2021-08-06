@@ -3,6 +3,7 @@ package com.codepath.noteit.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,10 +14,7 @@ import com.codepath.noteit.models.User;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
-
-import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 

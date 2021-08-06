@@ -65,6 +65,7 @@ public class MainNoteAdapter extends RecyclerView.Adapter<MainNoteAdapter.ViewHo
 
         public void bind(final Note note) {
             binding.tvItemTitle.setText(note.getTitle());
+            binding.tvItemTitle.setBackgroundColor(note.getColor());
             binding.getRoot().setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {

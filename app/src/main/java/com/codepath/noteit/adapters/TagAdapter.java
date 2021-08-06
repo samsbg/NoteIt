@@ -1,13 +1,18 @@
 package com.codepath.noteit.adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.codepath.noteit.R;
 import com.codepath.noteit.databinding.ItemSearchBinding;
 import com.codepath.noteit.databinding.ItemTagBinding;
 import com.codepath.noteit.models.Tag;
@@ -59,6 +64,7 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.ViewHolder>{
 
         public void bind(final Tag tag) {
             binding.tvTag.setText(tag.getName());
+            DrawableCompat.setTint(binding.tvTag.getBackground(), tag.getColor());
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -1,6 +1,7 @@
 package com.codepath.noteit.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.content.Intent;
@@ -49,7 +50,8 @@ public class TagActivity extends AppCompatActivity implements PopupMenu.OnMenuIt
 
         tag = getIntent().getParcelableExtra("TAG");
         
-        binding.tvGoalName.setText(tag.getName());
+        binding.tvTagName.setText(tag.getName());
+        DrawableCompat.setTint(binding.tvTagName.getBackground(), tag.getColor());
 
         MainNoteAdapter.OnClickListener onClickListenerNote = new MainNoteAdapter.OnClickListener() {
             @Override
@@ -73,7 +75,6 @@ public class TagActivity extends AppCompatActivity implements PopupMenu.OnMenuIt
         JSONArray notesArray = tag.getNotes();
         List<Note> notes = new ArrayList<>();
         List<String> notesId = new ArrayList<>();
-        Gson gson = new Gson();
 
         for (int i=0;i<notesArray.length();i++) {
             try {

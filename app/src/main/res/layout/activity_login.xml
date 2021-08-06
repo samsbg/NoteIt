@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/login_background"
     tools:context=".activities.LoginActivity">
 
     <TextView
@@ -12,46 +13,58 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="50dp"
         android:text="@string/app_name"
         android:textColor="@color/black"
         android:textSize="48sp" />
 
     <EditText
         android:id="@+id/etPassword"
-        android:layout_width="234dp"
-        android:layout_height="wrap_content"
+        android:layout_width="210dp"
+        android:layout_height="26dp"
         android:layout_below="@+id/etUsername"
         android:layout_centerHorizontal="true"
-        android:inputType="textPassword"
-        android:layout_marginTop="5dp"
-        android:hint="Password" />
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_edittext"
+        android:backgroundTint="@color/white"
+        android:gravity="center"
+        android:hint="Password"
+        android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/etUsername"
-        android:layout_width="234dp"
-        android:layout_height="wrap_content"
+        android:layout_width="210dp"
+        android:layout_height="26dp"
         android:layout_below="@+id/loginTitle"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="144dp"
+        android:background="@drawable/rounded_edittext"
+        android:backgroundTint="@color/white"
+        android:gravity="center"
         android:hint="Username" />
 
     <Button
         android:id="@+id/btnLogin"
-        android:layout_width="180dp"
-        android:layout_height="wrap_content"
+        android:layout_width="84dp"
+        android:layout_height="40dp"
         android:layout_below="@+id/etPassword"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="217dp"
+        android:backgroundTint="@color/dark_gray"
         android:text="Login" />
 
     <Button
         android:id="@+id/btnSignUp"
-        android:layout_width="180dp"
-        android:layout_height="wrap_content"
+        android:layout_width="84dp"
+        android:layout_height="40dp"
         android:layout_below="@+id/btnLogin"
+        android:layout_alignParentEnd="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="-6dp"
+        android:layout_marginEnd="155dp"
+        android:backgroundTint="@color/dark_gray"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
         android:text="Sign up" />
 
 </RelativeLayout>

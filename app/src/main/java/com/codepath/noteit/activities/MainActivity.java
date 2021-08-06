@@ -152,7 +152,9 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
         TagAdapter.OnClickListener onClickListenerTag = new TagAdapter.OnClickListener() {
             @Override
             public void onItemClicked(Tag tag) {
-                //intent
+                Intent i = new Intent(MainActivity.this, TagActivity.class);
+                i.putExtra("TAG", tag);
+                startActivity(i);
             }
         };
 
@@ -223,13 +225,13 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
         tags = new ArrayList<>();
         tagAdapter = new TagAdapter(this, tags, onClickListenerTag);
-        binding.rvTags.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvTags.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         binding.rvTags.setAdapter(tagAdapter);
         queryTags();
 
         notesSearch = new ArrayList<>();
         searchNoteAdapter = new SearchNoteAdapter(this, notesSearch, onClickListenerSearchNote);
-        binding.rvSearchMainNote.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        binding.rvSearchMainNote.setLayoutManager(new LinearLayoutManager(this));
         binding.rvSearchMainNote.setAdapter(searchNoteAdapter);
 
         tagsSearch = new ArrayList<>();
@@ -319,7 +321,6 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                 }
                 reverse(notesList);
                 notes.addAll(notesList);
-                Log.d("MainActivity", "Size of list " + notes.size());
                 noteAdapter.notifyDataSetChanged();
             }
         });
@@ -338,7 +339,6 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                 }
                 reverse(goalsList);
                 goals.addAll(goalsList);
-                Log.d("MainActivity", "Size of list goal " + goals.size());
                 goalAdapter.notifyDataSetChanged();
             }
         });
