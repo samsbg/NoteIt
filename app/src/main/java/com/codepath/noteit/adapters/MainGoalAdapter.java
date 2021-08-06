@@ -1,6 +1,8 @@
 package com.codepath.noteit.adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +63,7 @@ public class MainGoalAdapter extends  RecyclerView.Adapter<MainGoalAdapter.ViewH
             binding.progressBar.setMax(goal.getTotalReviews());
             binding.progressBar.setProgress(goal.getReviewed());
             binding.tvdivision.setText((goal.getReviewed() + "/" + goal.getTotalReviews()));
+            binding.progressBar.setProgressTintList(ColorStateList.valueOf(goal.getColor()));
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

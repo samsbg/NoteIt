@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/upper_and_bottom_lines">
+    android:layout_height="75dp"
+    android:background="@drawable/banner_2">
 
     <TextView
         android:id="@+id/tvGoal"
@@ -13,7 +13,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
+        android:textColor="#000000"
         android:textSize="16sp"
         tools:text="Review spanish verbs" />
 
@@ -22,8 +22,9 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
         android:background="@drawable/ring_shape"
         android:indeterminate="false"
@@ -34,10 +35,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/progressBar"
+        android:layout_alignTop="@+id/progressBar"
         android:layout_alignEnd="@+id/progressBar"
-        android:layout_centerVertical="true"
+        android:layout_alignBottom="@+id/progressBar"
         android:layout_marginStart="5dp"
+        android:layout_marginTop="-5dp"
         android:layout_marginEnd="5dp"
+        android:layout_marginBottom="-5dp"
         android:gravity="center"
         tools:text="4/6" />
 </RelativeLayout>

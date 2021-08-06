@@ -23,7 +23,9 @@ import android.widget.Toast;
 
 import com.codepath.noteit.R;
 import com.codepath.noteit.adapters.ColorAdapter;
+import com.codepath.noteit.adapters.MainNoteAdapter;
 import com.codepath.noteit.adapters.NoteImagesAdapter;
+import com.codepath.noteit.adapters.SearchTagAdapter;
 import com.codepath.noteit.adapters.TagAdapter;
 import com.codepath.noteit.databinding.ActivityNoteEditorBinding;
 import com.codepath.noteit.models.Goal;
@@ -113,6 +115,15 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
             }
         };
 
+        TagAdapter.OnClickListener onClickListenerTag = new TagAdapter.OnClickListener() {
+            @Override
+            public void onItemClicked(Tag tag) {
+                Intent i = new Intent(NoteEditorActivity.this, TagActivity.class);
+                i.putExtra("TAG", tag);
+                startActivity(i);
+            }
+        };
+
         if (getIntent().getParcelableExtra("NOTE") != null) {
             note = (Note) getIntent().getParcelableExtra("NOTE");
             binding.tvTitle.setText(note.getTitle());
@@ -177,6 +188,38 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                 }
             });
         }
+
+        tagsTop = new ArrayList<>();
+        JSONArray tagsTopArr = note.getTags();
+        List<String> tagsId = new ArrayList<>();
+
+        for (int i=0;i<tagsTopArr.length();i++) {
+            try {
+                JSONObject jObj = tagsTopArr.getJSONObject(i);
+                tagsId.add(jObj.getString("objectId"));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
+        query.whereContainedIn("objectId", tagsId);
+        query.findInBackground(new FindCallback<Tag>() {
+            @Override
+            public void done(List<Tag> notesList, com.parse.ParseException e) {
+                if (e != null) {
+                    Log.e("TagActivity", "Issue with getting notes", e);
+                    return;
+                }
+                tagsTop.addAll(notesList);
+
+                tagAdapter = new TagAdapter(NoteEditorActivity.this, tagsTop, onClickListenerTag);
+                binding.rvTags.setLayoutManager(new LinearLayoutManager(NoteEditorActivity.this, LinearLayoutManager.HORIZONTAL, false));
+                binding.rvTags.setAdapter(tagAdapter);
+            }
+        });
+
 
         adapter = new NoteImagesAdapter(this, images);
         binding.rvImages.setLayoutManager(new GridLayoutManager(this, 3));
@@ -348,8 +391,10 @@ public class NoteEditorActivity extends AppCompatActivity implements PopupMenu.O
                             tags = new JSONArray();
                         }
 
+                        tagsTop.add(tagSave);
                         tags.put(tagSave);
                         note.setTags(tags);
+                        tagAdapter.notifyDataSetChanged();
 
                         saveNote();
                     }

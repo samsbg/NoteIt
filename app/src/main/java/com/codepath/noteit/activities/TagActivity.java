@@ -17,18 +17,23 @@ import com.codepath.noteit.databinding.ActivityTagBinding;
 import com.codepath.noteit.models.Goal;
 import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Tag;
+import com.codepath.noteit.models.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
+import com.plattysoft.leonids.ParticleSystem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static java.util.Collections.reverse;
@@ -38,6 +43,7 @@ public class TagActivity extends AppCompatActivity implements PopupMenu.OnMenuIt
     ActivityTagBinding binding;
     MainNoteAdapter noteAdapter;
     Tag tag;
+    Goal goal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +55,38 @@ public class TagActivity extends AppCompatActivity implements PopupMenu.OnMenuIt
         setContentView(view);
 
         tag = getIntent().getParcelableExtra("TAG");
+
+        if (getIntent().getParcelableExtra("GOAL") != null) {
+            goal = getIntent().getParcelableExtra("GOAL");
+            binding.btnReviewTag.setVisibility(View.VISIBLE);
+            binding.btnReviewTag.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new ParticleSystem(TagActivity.this, 80, R.drawable.confeti2, (long) 1000)
+                            .setSpeedRange(0.2f, 0.5f)
+                            .oneShot(binding.btnReviewTag, 40);
+                    if (goal.getReviewed() < goal.getTotalReviews()) {
+                        goal.setReviewed(goal.getReviewed() + 1);
+                        User user = (User) ParseUser.getCurrentUser();
+                        user.setNotesReviewed(user.getNotesReviewed() + 1);
+                        if (goal.getReviewed() == goal.getTotalReviews()) {
+                            goal.setCompletedBy(Calendar.getInstance().getTime());
+                        }
+                    }
+                    goal.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e != null) {
+                                Log.e("TagActivity", "Issue with saving goal", e);
+                                return;
+                            }
+                            Intent i = new Intent(TagActivity.this, MainActivity.class);
+                            startActivity(i);
+                        }
+                    });
+                }
+            });
+        }
         
         binding.tvTagName.setText(tag.getName());
         DrawableCompat.setTint(binding.tvTagName.getBackground(), tag.getColor());
@@ -92,7 +130,7 @@ public class TagActivity extends AppCompatActivity implements PopupMenu.OnMenuIt
             @Override
             public void done(List<Note> notesList, com.parse.ParseException e) {
                 if (e != null) {
-                    Log.e("MainActivity", "Issue with getting notes", e);
+                    Log.e("TagActivity", "Issue with getting notes", e);
                     return;
                 }
                 notes.addAll(notesList);

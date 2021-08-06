@@ -4,12 +4,14 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,6 +60,9 @@ public class DayGoalAdapter extends RecyclerView.Adapter<DayGoalAdapter.ViewHold
 
         public void bind(final Goal goal) {
             binding.tvDayGoal.setText(goal.getName());
+            Drawable background = binding.tvDayGoal.getBackground();
+            int color = goal.getColor();
+            DrawableCompat.setTint(background, color);
         }
     }
 }

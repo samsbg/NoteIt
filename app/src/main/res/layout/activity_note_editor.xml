@@ -7,11 +7,36 @@
     android:layout_height="wrap_content"
     tools:context=".activities.NoteEditorActivity">
 
+    <TextView
+        android:id="@+id/tvTags2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ibDelete"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="15dp"
+        android:text="Tags:"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTags"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ibDelete"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="10dp"
+        android:layout_toEndOf="@+id/tvTags2"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvImages"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ibDelete"
+        android:layout_below="@+id/tvTags2"
         android:layout_alignParentStart="true"
         android:layout_marginTop="10dp">
 
@@ -121,9 +146,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="1dp"
-        android:layout_marginEnd="7dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="25dp"
+        android:layout_toStartOf="@+id/btndropdown2"
+        android:backgroundTint="#000000"
         android:text="REVIEW"
         android:visibility="gone" />
 
