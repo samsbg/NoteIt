@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,6 +16,7 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
+import com.codepath.noteit.ActionButton;
 import com.codepath.noteit.NoteItApp;
 import com.codepath.noteit.R;
 import com.codepath.noteit.GoogleCalendarClient;
@@ -30,6 +32,9 @@ import com.codepath.noteit.models.Tag;
 import com.codepath.noteit.models.User;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.gordonwong.materialsheetfab.AnimatedFab;
+import com.gordonwong.materialsheetfab.MaterialSheetFab;
+import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -63,7 +68,7 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
     private GoogleCalendarClient client;
 
-    final int RC_SIGN_IN = 23;
+    private int statusBarColor;
 
     public static HashMap<String, List<Note>> substringsNotes;
     static {
@@ -301,6 +306,31 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                         return true;
                     default: return true;
                 }
+            }
+        });
+        int sheetColor = getResources().getColor(R.color.white);
+        int fabColor = getResources().getColor(R.color.color_2_fuchsia);
+
+        // Create material sheet FAB
+        MaterialSheetFab<ActionButton> materialSheetFab = new MaterialSheetFab<>(binding.fab, binding.fabSheet, binding.overlay, sheetColor, fabColor);
+
+        // Set material sheet item click listeners
+        findViewById(R.id.fab_note).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                materialSheetFab.hideSheet();
+                Intent j = new Intent(MainActivity.this, NoteEditorActivity.class);
+                startActivity(j);
+                overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+            }
+        });
+        findViewById(R.id.fab_goal).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                materialSheetFab.hideSheet();
+                Intent k = new Intent(MainActivity.this, GoalEditorActivity.class);
+                startActivity(k);
+                overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
             }
         });
     }

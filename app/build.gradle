@@ -99,4 +99,10 @@ dependencies {
 
     // Animations
     implementation 'com.daimajia.androidanimations:library:2.4@aar'
+
+    //Action button
+    implementation 'com.gordonwong:material-sheet-fab:1.2.1'
+    compile 'com.google.android.material:material:1.0.0'
+    compile 'androidx.cardview:cardview:1.0.0'
+    compile 'androidx.recyclerview:recyclerview:1.0.0'
 }
