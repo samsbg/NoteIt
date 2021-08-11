@@ -1,11 +1,10 @@
 package com.codepath.noteit.activities;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -31,21 +30,17 @@ import com.codepath.noteit.models.Note;
 import com.codepath.noteit.models.Tag;
 import com.codepath.noteit.models.User;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.gordonwong.materialsheetfab.AnimatedFab;
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
-import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 import com.parse.FindCallback;
-import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.Headers;
 import static java.util.Collections.reverse;
@@ -65,10 +60,6 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
     List<Tag> tags;
     List<Note> notesSearch;
     List<Tag> tagsSearch;
-
-    private GoogleCalendarClient client;
-
-    private int statusBarColor;
 
     public static HashMap<String, List<Note>> substringsNotes;
     static {
@@ -91,12 +82,12 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                         for (int j = i + 1; j <= stringLength; j++) {
                             substring = n.getTitle().substring(i,j).toLowerCase();
                             if(substringsNotes.containsKey(substring)) {
-                                if (!substringsNotes.get(substring).contains(n)) {
-                                    substringsNotes.get(substring).add(n);
+                                if (!Objects.requireNonNull(substringsNotes.get(substring)).contains(n)) {
+                                    Objects.requireNonNull(substringsNotes.get(substring)).add(n);
                                 }
                             } else {
                                 substringsNotes.put(substring, new ArrayList<>());
-                                substringsNotes.get(substring).add(n);
+                                Objects.requireNonNull(substringsNotes.get(substring)).add(n);
                             }
                         }
 
@@ -127,12 +118,12 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                         for (int j = i + 1; j <= stringLength; j++) {
                             substring = t.getName().substring(i,j).toLowerCase();
                             if(substringsTag.containsKey(substring)) {
-                                if (!substringsTag.get(substring).contains(t)) {
-                                    substringsTag.get(substring).add(t);
+                                if (!Objects.requireNonNull(substringsTag.get(substring)).contains(t)) {
+                                    Objects.requireNonNull(substringsTag.get(substring)).add(t);
                                 }
                             } else {
                                 substringsTag.put(substring, new ArrayList<>());
-                                substringsTag.get(substring).add(t);
+                                Objects.requireNonNull(substringsTag.get(substring)).add(t);
                             }
                         }
 
@@ -150,66 +141,47 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
         View view = binding.getRoot();
         setContentView(view);
 
-        TagAdapter.OnClickListener onClickListenerTag = new TagAdapter.OnClickListener() {
-            @Override
-            public void onItemClicked(Tag tag) {
-                Intent i = new Intent(MainActivity.this, TagActivity.class);
-                i.putExtra("TAG", tag);
-                startActivity(i);
-            }
+        tagAdapterSetup();
+        noteAdapterSetup();
+        goalAdapterSetup();
+
+        searchSetup();
+        bottomNavigationSetup();
+        fabSetup();
+
+        binding.ibUserIcon.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(MainActivity.this, v);
+            popup.setOnMenuItemClickListener(MainActivity.this);
+            popup.inflate(R.menu.menu_user_icon_main);
+            popup.show();
+        });
+    }
+
+    private void tagAdapterSetup() {
+        TagAdapter.OnClickListener onClickListenerTag = tag -> {
+            Intent i = new Intent(MainActivity.this, TagActivity.class);
+            i.putExtra("TAG", tag);
+            startActivity(i);
         };
 
-        SearchNoteAdapter.OnClickListener onClickListenerSearchNote = new SearchNoteAdapter.OnClickListener() {
-            @Override
-            public void onItemClicked(Note note) {
-                Intent i = new Intent(MainActivity.this, NoteEditorActivity.class);
-                i.putExtra("NOTE", note);
-                startActivity(i);
-            }
-        };
+        tags = new ArrayList<>();
+        tagAdapter = new TagAdapter(this, tags, onClickListenerTag);
+        binding.rvTags.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        binding.rvTags.setAdapter(tagAdapter);
+        queryTags();
+    }
 
-        SearchTagAdapter.OnClickListener onClickListenerSearchTag = new SearchTagAdapter.OnClickListener() {
-            @Override
-            public void onItemClicked(Tag tag) {
-                Intent i = new Intent(MainActivity.this, TagActivity.class);
-                i.putExtra("TAG", tag);
-                startActivity(i);
-            }
+    private void noteAdapterSetup() {
+        MainNoteAdapter.OnClickListener onClickListenerNote = note -> {
+            Intent i = new Intent(MainActivity.this, NoteEditorActivity.class);
+            i.putExtra("NOTE", note);
+            startActivity(i);
         };
-
-        MainNoteAdapter.OnClickListener onClickListenerNote = new MainNoteAdapter.OnClickListener() {
-            @Override
-            public void onItemClicked(Note note) {
-                Intent i = new Intent(MainActivity.this, NoteEditorActivity.class);
-                i.putExtra("NOTE", note);
-                startActivity(i);
-            }
-        };
-
-        MainNoteAdapter.OnLongClickListener onLongClickListenerNote = new MainNoteAdapter.OnLongClickListener() {
-            @Override
-            public void onItemClicked(Note note, View v) {
-                PopupMenu popup = new PopupMenu(MainActivity.this, v);
-                popup.setOnMenuItemClickListener(MainActivity.this);
-                popup.inflate(R.menu.menu_note);
-                popup.show();
-            }
-        };
-
-        MainGoalAdapter.OnClickListener onClickListenerGoal = new MainGoalAdapter.OnClickListener() {
-            @Override
-            public void onItemClicked(Goal goal) {
-                Intent i;
-                if(goal.getNote() != null) {
-                    i = new Intent(MainActivity.this, NoteEditorActivity.class);
-                    i.putExtra("NOTE_GOAL", goal.getNote());
-                } else {
-                    i = new Intent(MainActivity.this, TagActivity.class);
-                    i.putExtra("TAG", goal.getTag());
-                }
-                i.putExtra("GOAL", goal);
-                startActivity(i);
-            }
+        MainNoteAdapter.OnLongClickListener onLongClickListenerNote = (note, v) -> {
+            PopupMenu popup = new PopupMenu(MainActivity.this, v);
+            popup.setOnMenuItemClickListener(MainActivity.this);
+            popup.inflate(R.menu.menu_note);
+            popup.show();
         };
 
         notes = new ArrayList<>();
@@ -217,18 +189,41 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
         binding.rvNotes.setLayoutManager(new GridLayoutManager(this, 2));
         binding.rvNotes.setAdapter(noteAdapter);
         queryNotes();
+    }
+
+    private void goalAdapterSetup() {
+        MainGoalAdapter.OnClickListener onClickListenerGoal = goal -> {
+            Intent i;
+            if(goal.getNote() != null) {
+                i = new Intent(MainActivity.this, NoteEditorActivity.class);
+                i.putExtra("NOTE_GOAL", goal.getNote());
+            } else {
+                i = new Intent(MainActivity.this, TagActivity.class);
+                i.putExtra("TAG", goal.getTag());
+            }
+            i.putExtra("GOAL", goal);
+            startActivity(i);
+        };
 
         goals = new ArrayList<>();
         goalAdapter = new MainGoalAdapter(this, goals, onClickListenerGoal);
         binding.rvGoals.setLayoutManager(new LinearLayoutManager(this));
         binding.rvGoals.setAdapter(goalAdapter);
         queryGoals();
+    }
 
-        tags = new ArrayList<>();
-        tagAdapter = new TagAdapter(this, tags, onClickListenerTag);
-        binding.rvTags.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        binding.rvTags.setAdapter(tagAdapter);
-        queryTags();
+    private void searchSetup() {
+        SearchNoteAdapter.OnClickListener onClickListenerSearchNote = note -> {
+            Intent i = new Intent(MainActivity.this, NoteEditorActivity.class);
+            i.putExtra("NOTE", note);
+            startActivity(i);
+        };
+
+        SearchTagAdapter.OnClickListener onClickListenerSearchTag = tag -> {
+            Intent i = new Intent(MainActivity.this, TagActivity.class);
+            i.putExtra("TAG", tag);
+            startActivity(i);
+        };
 
         notesSearch = new ArrayList<>();
         searchNoteAdapter = new SearchNoteAdapter(this, notesSearch, onClickListenerSearchNote);
@@ -239,16 +234,6 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
         searchTagAdapter = new SearchTagAdapter(this, tagsSearch, onClickListenerSearchTag);
         binding.rvSearchMainTag.setLayoutManager(new LinearLayoutManager(this));
         binding.rvSearchMainTag.setAdapter(searchTagAdapter);
-
-        binding.ibUserIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(MainActivity.this, v);
-                popup.setOnMenuItemClickListener(MainActivity.this);
-                popup.inflate(R.menu.menu_user_icon_main);
-                popup.show();
-            }
-        });
 
         binding.etSearchMain.addTextChangedListener(new TextWatcher() {
             @Override
@@ -265,7 +250,7 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                 binding.rvSearchMainNote.setVisibility(View.VISIBLE);
                 notesSearch.clear();
                 if(!text.equals("") && substringsNotes.containsKey(text)) {
-                    notesSearch.addAll(substringsNotes.get(text));
+                    notesSearch.addAll(Objects.requireNonNull(substringsNotes.get(text)));
                 }
                 searchNoteAdapter.notifyDataSetChanged();
                 if(notesSearch.isEmpty()) {
@@ -276,7 +261,7 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                 binding.rvSearchMainTag.setVisibility(View.VISIBLE);
                 tagsSearch.clear();
                 if(!text.equals("") && substringsTag.containsKey(text)) {
-                    tagsSearch.addAll(substringsTag.get(text));
+                    tagsSearch.addAll(Objects.requireNonNull(substringsTag.get(text)));
                 }
                 searchTagAdapter.notifyDataSetChanged();
                 if(tagsSearch.isEmpty()) {
@@ -285,70 +270,60 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
             }
         });
+    }
 
-        binding.bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.iAdd:
-                        PopupMenu popup = new PopupMenu(MainActivity.this, findViewById(R.id.iAdd));
-                        popup.setOnMenuItemClickListener(MainActivity.this);
-                        popup.inflate(R.menu.menu_add_main);
-                        popup.show();
-                        return true;
-                    case R.id.iCalendar:
-                        Intent i = new Intent(MainActivity.this, CalendarActivity.class);
-                        startActivity(i);
-                        return true;
-                    case R.id.iStats:
-                        Intent j = new Intent(MainActivity.this, StatisticsActivity.class);
-                        startActivity(j);
-                        return true;
-                    default: return true;
-                }
+    @SuppressLint("NonConstantResourceId")
+    private void bottomNavigationSetup() {
+        binding.bottomNavigation.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.iAdd:
+                    PopupMenu popup = new PopupMenu(MainActivity.this, findViewById(R.id.iAdd));
+                    popup.setOnMenuItemClickListener(MainActivity.this);
+                    popup.inflate(R.menu.menu_add_main);
+                    popup.show();
+                    return true;
+                case R.id.iCalendar:
+                    Intent i = new Intent(MainActivity.this, CalendarActivity.class);
+                    startActivity(i);
+                    return true;
+                case R.id.iStats:
+                    Intent j = new Intent(MainActivity.this, StatisticsActivity.class);
+                    startActivity(j);
+                    return true;
+                default:
+                    return true;
             }
         });
-        int sheetColor = getResources().getColor(R.color.white);
-        int fabColor = getResources().getColor(R.color.color_2_fuchsia);
+    }
 
-        // Create material sheet FAB
-        MaterialSheetFab<ActionButton> materialSheetFab = new MaterialSheetFab<>(binding.fab, binding.fabSheet, binding.overlay, sheetColor, fabColor);
+    private void fabSetup() {
+        MaterialSheetFab<ActionButton> materialSheetFab = new MaterialSheetFab<>(binding.fab, binding.fabSheet, binding.overlay, getColor(R.color.white), getColor(R.color.color_2_fuchsia));
 
-        // Set material sheet item click listeners
-        findViewById(R.id.fab_note).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                materialSheetFab.hideSheet();
-                Intent j = new Intent(MainActivity.this, NoteEditorActivity.class);
-                startActivity(j);
-                overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-            }
+        findViewById(R.id.fab_note).setOnClickListener(v -> {
+            materialSheetFab.hideSheet();
+            Intent j = new Intent(MainActivity.this, NoteEditorActivity.class);
+            startActivity(j);
+            overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
         });
-        findViewById(R.id.fab_goal).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                materialSheetFab.hideSheet();
-                Intent k = new Intent(MainActivity.this, GoalEditorActivity.class);
-                startActivity(k);
-                overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-            }
+        findViewById(R.id.fab_goal).setOnClickListener(v -> {
+            materialSheetFab.hideSheet();
+            Intent k = new Intent(MainActivity.this, GoalEditorActivity.class);
+            startActivity(k);
+            overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
         });
     }
 
     private void queryNotes() {
         ParseQuery<Note> query = ParseQuery.getQuery(Note.class);
         query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
-        query.findInBackground(new FindCallback<Note>() {
-            @Override
-            public void done(List<Note> notesList, com.parse.ParseException e) {
-                if (e != null) {
-                    Log.e("MainActivity", "Issue with getting notes", e);
-                    return;
-                }
-                reverse(notesList);
-                notes.addAll(notesList);
-                noteAdapter.notifyDataSetChanged();
+        query.findInBackground((notesList, e) -> {
+            if (e != null) {
+                Log.e("MainActivity", "Issue with getting notes", e);
+                return;
             }
+            reverse(notesList);
+            notes.addAll(notesList);
+            noteAdapter.notifyDataSetChanged();
         });
     }
 
@@ -356,36 +331,31 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
         ParseQuery<Goal> query = ParseQuery.getQuery(Goal.class);
         query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
         query.whereEqualTo("completedBy", null);
-        query.findInBackground(new FindCallback<Goal>() {
-            @Override
-            public void done(List<Goal> goalsList, com.parse.ParseException e) {
-                if (e != null) {
-                    Log.e("MainActivity", "Issue with getting notes", e);
-                    return;
-                }
-                reverse(goalsList);
-                goals.addAll(goalsList);
-                goalAdapter.notifyDataSetChanged();
+        query.findInBackground((goalsList, e) -> {
+            if (e != null) {
+                Log.e("MainActivity", "Issue with getting notes", e);
+                return;
             }
+            reverse(goalsList);
+            goals.addAll(goalsList);
+            goalAdapter.notifyDataSetChanged();
         });
     }
 
     private void queryTags() {
         ParseQuery<Tag> query = ParseQuery.getQuery(Tag.class);
         query.whereEqualTo("createdBy", ParseUser.getCurrentUser());
-        query.findInBackground(new FindCallback<Tag>() {
-            @Override
-            public void done(List<Tag> tagsList, com.parse.ParseException e) {
-                if (e != null) {
-                    Log.e("MainActivity", "Issue with getting tags", e);
-                    return;
-                }
-                tags.addAll(tagsList);
-                tagAdapter.notifyDataSetChanged();
+        query.findInBackground((tagsList, e) -> {
+            if (e != null) {
+                Log.e("MainActivity", "Issue with getting tags", e);
+                return;
             }
+            tags.addAll(tagsList);
+            tagAdapter.notifyDataSetChanged();
         });
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
@@ -394,16 +364,6 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                 Intent i  = new Intent(this, LoginActivity.class);
                 startActivity(i);
                 finish();
-                return true;
-            case R.id.iNote:
-                Intent j = new Intent(this, NoteEditorActivity.class);
-                startActivity(j);
-                overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-                return true;
-            case R.id.iGoal:
-                Intent k = new Intent(this, GoalEditorActivity.class);
-                startActivity(k);
-                overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
                 return true;
             case R.id.iConnectGoogle:
                 getClient().connect();
@@ -421,7 +381,7 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
 
     private void createCalendar() {
         if (((User) ParseUser.getCurrentUser()).getCalendarId().equals("-")) {
-            client = NoteItApp.getRestClient(MainActivity.this);
+            GoogleCalendarClient client = NoteItApp.getRestClient(MainActivity.this);
 
             client.createCalendar("NoteIt", new JsonHttpResponseHandler() {
                 @Override
@@ -429,13 +389,9 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
                     Log.d("MainActivity", "Success in creating calendar");
                     try {
                         ((User) ParseUser.getCurrentUser()).setCalendarId(json.jsonObject.getString("id"));
-                        ((User) ParseUser.getCurrentUser()).saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e != null) {
-                                    Log.e("LoginActivity", "Issue with saving calendar to user", e);
-                                    return;
-                                }
+                        ((User) ParseUser.getCurrentUser()).saveInBackground(e -> {
+                            if (e != null) {
+                                Log.e("LoginActivity", "Issue with saving calendar to user", e);
                             }
                         });
                     } catch (JSONException e) {
