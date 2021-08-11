@@ -4,8 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/left_background"
     tools:context=".StatisticsActivity">
 
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
+        android:layout_below="@+id/tvSectionName"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="100dp"
+        android:src="@drawable/rounded_edittext"
+        app:tint="#BFFFFFFF" />
 
     <TextView
         android:id="@+id/tvSectionName"

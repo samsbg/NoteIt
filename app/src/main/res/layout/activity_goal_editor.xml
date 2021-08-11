@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/center_background"
     tools:context=".activities.GoalEditorActivity">
 
     <EditText
@@ -18,9 +19,9 @@
         android:backgroundTint="@color/black"
         android:hint="Name"
         android:paddingStart="5dp"
-        android:paddingTop="2dp"
+        android:paddingTop="5dp"
         android:paddingEnd="5dp"
-        android:paddingBottom="2dp"
+        android:paddingBottom="5dp"
         android:textColor="@color/white"
         android:textColorHint="#C8C8C8"
         tools:layout_editor_absoluteX="53dp"
@@ -121,9 +122,9 @@
         android:backgroundTint="@color/black"
         android:hint="mm/dd/yyyy"
         android:paddingStart="5dp"
-        android:paddingTop="2dp"
+        android:paddingTop="5dp"
         android:paddingEnd="5dp"
-        android:paddingBottom="2dp"
+        android:paddingBottom="5dp"
         android:textColor="@color/white"
         android:textColorHint="#C8C8C8"
         android:textSize="18sp" />
@@ -139,12 +140,15 @@
         android:background="@drawable/rounded_edittext"
         android:backgroundTint="@color/black"
         android:ems="10"
-        android:hint=" "
+        android:gravity="center"
+        android:hint="0"
         android:inputType="number"
         android:paddingStart="5dp"
-        android:paddingTop="2dp"
+        android:paddingTop="5dp"
         android:paddingEnd="5dp"
-        android:paddingBottom="2dp"
+        android:paddingBottom="5dp"
+        android:textColor="@color/white"
+        android:textColorHint="#C8C8C8"
         android:textSize="18sp" />
 
     <androidx.recyclerview.widget.RecyclerView

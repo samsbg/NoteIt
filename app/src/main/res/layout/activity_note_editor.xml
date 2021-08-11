@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/center_background"
     tools:context=".activities.NoteEditorActivity">
 
     <TextView
@@ -228,16 +228,6 @@
             app:srcCompat="@drawable/circle_shape"
             app:tint="@color/color_1_green" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvColors2"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btndropdown"
-            android:layout_alignStart="@+id/btndropdown"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="-5dp"
-            android:visibility="gone" />
-
         <Button
             android:id="@+id/btnSaveTag"
             android:layout_width="wrap_content"
@@ -249,6 +239,16 @@
             android:backgroundTint="#000000"
             android:text="SAVE"
             android:textColor="@color/white" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvColors2"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btndropdown"
+            android:layout_alignStart="@+id/btndropdown"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="-5dp"
+            android:visibility="gone" />
 
     </RelativeLayout>
 

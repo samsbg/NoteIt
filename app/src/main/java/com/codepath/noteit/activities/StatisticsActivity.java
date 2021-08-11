@@ -98,7 +98,5 @@ public class StatisticsActivity extends AppCompatActivity {
                 binding.tvTagsReviewed.setText((Integer.toString(tags)));
             }
         });
-
-
     }
 }
