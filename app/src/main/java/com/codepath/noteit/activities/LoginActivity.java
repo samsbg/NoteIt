@@ -9,8 +9,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.codepath.noteit.R;
 import com.codepath.noteit.databinding.ActivityLoginBinding;
 import com.codepath.noteit.models.User;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -31,6 +34,14 @@ public class LoginActivity extends AppCompatActivity {
 
         View view = binding.getRoot();
         setContentView(view);
+
+        YoYo.with(Techniques.FadeIn).duration(5000).playOn(binding.background);
+
+        YoYo.with(Techniques.FadeIn).duration(2000).playOn(binding.etUsername);
+        YoYo.with(Techniques.FadeIn).duration(2000).playOn(binding.etPassword);
+
+        YoYo.with(Techniques.FadeIn).duration(4000).playOn(binding.btnLogin);
+        YoYo.with(Techniques.FadeIn).duration(4000).playOn(binding.btnSignUp);
 
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,13 +92,12 @@ public class LoginActivity extends AppCompatActivity {
                 goMainActivity();
             }
         });
-
-
     }
 
     private void goMainActivity() {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
+        overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
         finish();
     }
 }

@@ -368,10 +368,12 @@ public class MainActivity extends OAuthLoginActionBarActivity<GoogleCalendarClie
             case R.id.iNote:
                 Intent j = new Intent(this, NoteEditorActivity.class);
                 startActivity(j);
+                overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
                 return true;
             case R.id.iGoal:
                 Intent k = new Intent(this, GoalEditorActivity.class);
                 startActivity(k);
+                overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
                 return true;
             case R.id.iConnectGoogle:
                 getClient().connect();
